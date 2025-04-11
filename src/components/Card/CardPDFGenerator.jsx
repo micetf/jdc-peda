@@ -185,33 +185,23 @@ const CardPDFGenerator = ({ filter }) => {
                 });
             }
 
-            if (filter === "tout" || filter === "propriete") {
-                // Ajouter une page pour chaque type de propriété
-                selectedData.proprietes.forEach((propriete) => {
-                    pdf.addPage();
-                    pdf.setFontSize(18);
-                    pdf.setFont("helvetica", "bold");
-                    pdf.text(
-                        `Cartes "${formatPropertyName(propriete)}"`,
-                        pdf.internal.pageSize.width / 2,
-                        30,
-                        { align: "center" }
-                    );
-
-                    cards.push({
-                        type: "propriete",
-                        title: formatPropertyName(propriete),
-                        content: `${propriete}`,
-                        emoji: getCardEmoji("propriete", propriete),
-                        color: getCardColor("propriete", propriete),
-                    });
-                });
-            }
+            // Nous ne générons plus de cartes de propriété
 
             if (filter === "tout" || filter === "valeur") {
-                // Pour chaque propriété, créer une page pour ses valeurs
-                selectedData.proprietes.forEach((propriete) => {
-                    selectedData.familles.forEach((famille) => {
+                // Ajouter une page pour les cartes "Valeur"
+                pdf.addPage();
+                pdf.setFontSize(18);
+                pdf.setFont("helvetica", "bold");
+                pdf.text(
+                    `Cartes "Valeur"`,
+                    pdf.internal.pageSize.width / 2,
+                    30,
+                    { align: "center" }
+                );
+
+                // Pour chaque famille et propriété, créer les cartes de valeurs
+                selectedData.familles.forEach((famille) => {
+                    selectedData.proprietes.forEach((propriete) => {
                         const valeurs =
                             selectedData.valeurs[famille][propriete];
                         valeurs.forEach((valeur) => {
@@ -315,11 +305,7 @@ const CardPDFGenerator = ({ filter }) => {
                     50,
                     250
                 );
-                pdf.text(
-                    'Matériel: Cartes "Famille", "Propriété" et "Valeur"',
-                    50,
-                    270
-                );
+                pdf.text('Matériel: Cartes "Famille" et "Valeur"', 50, 270);
                 pdf.text(
                     'Règles: Placez les cartes "Famille" en ligne. À tour de rôle, chaque joueur pose une carte "Valeur" à côté de la famille correspondante et justifie son choix.',
                     50,
@@ -426,7 +412,7 @@ const CardPDFGenerator = ({ filter }) => {
 };
 
 CardPDFGenerator.propTypes = {
-    filter: PropTypes.oneOf(["tout", "famille", "propriete", "valeur"]),
+    filter: PropTypes.oneOf(["tout", "famille", "valeur"]),
 };
 
 CardPDFGenerator.defaultProps = {

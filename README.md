@@ -6,17 +6,18 @@ Ce projet est une application web permettant de générer des jeux de cartes pé
 
 - Sélection parmi différents corpus thématiques (pratiques pédagogiques, histoire, etc.)
 - Filtrage des cartes par type (famille, valeur)
-- Prévisualisation des cartes
+- Prévisualisation des cartes avec distinction visuelle par catégorie
 - Génération de PDF contenant les cartes et les règles du jeu
 - Interface utilisateur intuitive et responsive
 
 ## Structure du jeu de cartes
 
-Chaque jeu de cartes est structuré selon le modèle suivant :
+L'application génère deux types de cartes :
 
-- **Familles** : Représentent les catégories principales (ex: périodes historiques, temps forts d'une séance pédagogique)
-- **Propriétés** : Caractéristiques communes à toutes les familles (ex: habitat, personnages importants, objectifs visés). Ces propriétés ne sont pas représentées par des cartes distinctes, mais servent à organiser les valeurs.
-- **Valeurs** : Pour chaque propriété de chaque famille, des valeurs spécifiques (ex: "Grottes ornées" comme habitat pour la Préhistoire)
+- **Cartes Famille** : Représentent les principales catégories du corpus (ex: périodes historiques, temps forts d'une séance pédagogique)
+- **Cartes Valeur** : Représentent les valeurs spécifiques d'une propriété pour une famille donnée (ex: "Châteaux forts" comme valeur de "Habitat" pour la famille "Moyen Âge")
+
+_Note : Les propriétés sont utilisées pour organiser les valeurs mais ne génèrent pas de cartes dédiées._
 
 ## Corpus disponibles
 
@@ -74,7 +75,7 @@ pnpm dev
 
 ## Utilisation
 
-1. Accédez à l'application dans votre navigateur (par défaut : http://localhost:5173)
+1. Accédez à l'application dans votre navigateur (par défaut : http://localhost:5432)
 2. Sélectionnez un corpus thématique dans le menu déroulant
 3. Choisissez le type de cartes à afficher (Tout, Famille, Valeur)
 4. Cliquez sur "Afficher l'aperçu" pour prévisualiser les cartes
@@ -89,7 +90,7 @@ Chaque corpus doit définir :
 - Un identifiant unique
 - Un titre et une description
 - Une liste de familles
-- Une liste de propriétés
+- Une liste de propriétés (utilisées pour organiser les valeurs)
 - Les valeurs pour chaque propriété de chaque famille
 - Des métadonnées (niveau scolaire, objectifs pédagogiques, règles du jeu)
 - Optionnellement, des emojis et couleurs spécifiques
@@ -106,9 +107,9 @@ jeu-cartes-pedagogiques/
 │   │   │   ├── Card.jsx
 │   │   │   ├── CardGrid.jsx
 │   │   │   └── CardPDFGenerator.jsx
-│   │   ├── Corpus/
-│   │   │   ├── CorpusSelector.jsx
-│   │   │   └── CorpusContext.jsx
+│   │   ├── Data/
+│   │   │   ├── DataSelector.jsx
+│   │   │   └── DataContext.jsx
 │   │   ├── Layout/
 │   │   │   ├── Header.jsx
 │   │   │   └── Footer.jsx

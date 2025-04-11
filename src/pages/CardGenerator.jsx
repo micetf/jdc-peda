@@ -22,7 +22,6 @@ const CardGenerator = () => {
     const filterOptions = [
         { value: "tout", label: "Toutes les cartes" },
         { value: "famille", label: "Cartes Famille" },
-        { value: "propriete", label: "Cartes Propriété" },
         { value: "valeur", label: "Cartes Valeur" },
     ];
 
