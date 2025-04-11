@@ -216,6 +216,27 @@ const dataPedagogy = {
             "Mise en commun": 5,
             Institutionnalisation: 6,
         },
+        // Structure pour les images
+        images: {
+            // Chemins des images pour les familles
+            families: {
+                Accueil: "pedagogy/families/accueil.jpg",
+                "Entrée de séance": "pedagogy/families/entree-de-seance.jpg",
+                "Lancement d'activité":
+                    "pedagogy/families/lancement-activite.jpg",
+                "Mise en activité": "pedagogy/families/mise-en-activite.jpg",
+                "Mise en commun": "pedagogy/families/mise-en-commun.jpg",
+                Institutionnalisation:
+                    "pedagogy/families/institutionnalisation.jpg",
+            },
+            // Chemins des images pour les propriétés
+            properties: {
+                "Objectifs visés": "pedagogy/properties/objectifs.jpg",
+                "Écueils possibles": "pedagogy/properties/ecueils.jpg",
+                "Gestes professionnels": "pedagogy/properties/gestes.jpg",
+                "Tâches concrètes": "pedagogy/properties/taches.jpg",
+            },
+        },
     },
 };
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import Card from "./Card";
 
@@ -10,43 +10,49 @@ import Card from "./Card";
  * @returns {JSX.Element} Grille de cartes
  */
 const CardGrid = ({ data, filter }) => {
-    // Fonction pour obtenir la couleur d'une carte
-    const getCardColor = (type, name) => {
-        // Couleurs par défaut
-        const DEFAULT_COLORS = {
-            famille: "#FFFDE7", // Jaune très clair
-            valeur: "#F3E5F5", // Violet très clair
-        };
+    // Fonction pour obtenir la couleur d'une carte, mémorisée avec useCallback
+    const getCardColor = useCallback(
+        (type, name) => {
+            // Couleurs par défaut
+            const DEFAULT_COLORS = {
+                famille: "#FFFDE7", // Jaune très clair
+                valeur: "#F3E5F5", // Violet très clair
+            };
 
-        // Si le corpus a des couleurs spécifiques, les utiliser
-        if (data.metadata && data.metadata.colors) {
-            if (data.metadata.colors[name]) {
-                return data.metadata.colors[name];
-            } else if (data.metadata.colors[type]) {
-                return data.metadata.colors[type];
+            // Si le corpus a des couleurs spécifiques, les utiliser
+            if (data.metadata && data.metadata.colors) {
+                if (data.metadata.colors[name]) {
+                    return data.metadata.colors[name];
+                } else if (data.metadata.colors[type]) {
+                    return data.metadata.colors[type];
+                }
             }
-        }
 
-        return DEFAULT_COLORS[type] || "#FFFFFF";
-    };
+            return DEFAULT_COLORS[type] || "#FFFFFF";
+        },
+        [data]
+    );
 
-    // Fonction pour obtenir l'emoji d'une carte
-    const getCardEmoji = (type, name) => {
-        // Si le corpus a des emojis spécifiques, les utiliser
-        if (data.metadata && data.metadata.emojis) {
-            if (data.metadata.emojis[name]) {
-                return data.metadata.emojis[name];
+    // Fonction pour obtenir l'emoji d'une carte, mémorisée avec useCallback
+    const getCardEmoji = useCallback(
+        (type, name) => {
+            // Si le corpus a des emojis spécifiques, les utiliser
+            if (data.metadata && data.metadata.emojis) {
+                if (data.metadata.emojis[name]) {
+                    return data.metadata.emojis[name];
+                }
             }
-        }
 
-        // Emojis par défaut selon le type
-        const defaultEmojis = {
-            famille: "books",
-            valeur: "clipboard",
-        };
+            // Emojis par défaut selon le type
+            const defaultEmojis = {
+                famille: "books",
+                valeur: "clipboard",
+            };
 
-        return defaultEmojis[type] || "page_facing_up";
-    };
+            return defaultEmojis[type] || "page_facing_up";
+        },
+        [data]
+    );
 
     const cards = useMemo(() => {
         const result = [];
@@ -67,8 +73,6 @@ const CardGrid = ({ data, filter }) => {
             });
         }
 
-        // Nous ne générons plus de cartes de propriétés
-
         // Cartes de valeurs
         if (filter === "tout" || filter === "valeur") {
             data.familles.forEach((famille) => {
@@ -84,6 +88,7 @@ const CardGrid = ({ data, filter }) => {
                             content: `Valeur de "${propriete}" pour la famille "${famille}"`,
                             color: colorHex,
                             icon: getCardEmoji("valeur", propriete),
+                            propertyName: propriete,
                         });
                     });
                 });
@@ -91,12 +96,12 @@ const CardGrid = ({ data, filter }) => {
         }
 
         return result;
-    }, [data, filter]);
+    }, [data, filter, getCardColor, getCardEmoji]);
 
     // Convertir les couleurs hex en classes Tailwind ou en styles inline
-    const getColorStyle = (hexColor) => {
+    const getColorStyle = useCallback((hexColor) => {
         return { backgroundColor: hexColor };
-    };
+    }, []);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -109,6 +114,8 @@ const CardGrid = ({ data, filter }) => {
                     color={card.color}
                     icon={card.icon}
                     style={getColorStyle(card.color)}
+                    data={data}
+                    propertyName={card.propertyName}
                 />
             ))}
         </div>
