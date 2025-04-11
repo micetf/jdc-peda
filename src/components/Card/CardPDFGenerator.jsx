@@ -1,8 +1,8 @@
-// src/components/PDF/CardPDFGenerator.jsx
+// src/components/Card/CardPDFGenerator.jsx
 
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useData } from "../Data/DataContext"; // Conserve l'accès aux données globales
+import { useData } from "../Data/DataContext";
 import Button from "../UI/Button";
 import jsPDF from "jspdf";
 
@@ -13,7 +13,7 @@ import jsPDF from "jspdf";
  * @returns {JSX.Element} Bouton de génération de PDF
  */
 const CardPDFGenerator = ({ filter }) => {
-    const { selectedData } = useData(); // Récupère l'instance DataJeu modifiée
+    const { selectedData } = useData();
     const [isGenerating, setIsGenerating] = useState(false);
 
     // Configuration des cartes - 9 cartes par page (3x3)
@@ -25,8 +25,6 @@ const CardPDFGenerator = ({ filter }) => {
 
     /**
      * Charge une image à partir d'une URL/chemin et la convertit en Data URL base64.
-     * IMPORTANT: L'URL/chemin doit être accessible publiquement par le navigateur
-     * (ex: dans le dossier /public ou une URL externe).
      * @param {string} url - URL/chemin de l'image
      * @returns {Promise} - Promise contenant les données de l'image (Data URL) et ses dimensions
      */
@@ -39,7 +37,7 @@ const CardPDFGenerator = ({ filter }) => {
         }
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.crossOrigin = "Anonymous"; // Nécessaire pour charger des images cross-domain dans le canvas
+            img.crossOrigin = "Anonymous"; // Nécessaire pour charger des images cross-domain
             img.onload = () => {
                 const canvas = document.createElement("canvas");
                 canvas.width = img.width;
@@ -47,10 +45,10 @@ const CardPDFGenerator = ({ filter }) => {
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0);
                 try {
-                    // Utiliser JPEG pour une meilleure compression, ajuster si besoin (png)
-                    const imageData = canvas.toDataURL("image/jpeg", 0.9); // Qualité 0.9
+                    // Utiliser JPEG pour une meilleure compression
+                    const imageData = canvas.toDataURL("image/jpeg", 0.9);
                     resolve({
-                        data: imageData, // Data URL (base64)
+                        data: imageData,
                         width: img.width,
                         height: img.height,
                     });
@@ -67,13 +65,16 @@ const CardPDFGenerator = ({ filter }) => {
                 console.error("Erreur lors du chargement de l'image:", url, e);
                 reject(new Error(`Impossible de charger l'image: ${url}`));
             };
-            img.src = url; // L'URL/chemin fourni par DataJeu (ex: /img/...)
+            img.src = url;
         });
     };
 
-    // Fonction pour convertir une couleur hexadécimale en RGB (conservée)
+    /**
+     * Convertit une couleur hexadécimale en RGB
+     * @param {string} hex - Couleur au format hexadécimal
+     * @returns {number[]} Tableau de valeurs RGB [r, g, b]
+     */
     const hexToRgb = (hex) => {
-        // Gestion basique si hex est null ou undefined
         if (!hex) return [255, 255, 255]; // Blanc par défaut
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result
@@ -82,24 +83,21 @@ const CardPDFGenerator = ({ filter }) => {
                   parseInt(result[2], 16),
                   parseInt(result[3], 16),
               ]
-            : [255, 255, 255]; // Blanc si format invalide
+            : [255, 255, 255];
     };
-
-    // SUPPRIMÉ : getCardColor - la couleur vient de carte.color
 
     /**
      * Dessine une carte individuelle dans le PDF.
-     * Utilise les données de l'objet carte fourni par DataJeu.getCards().
      * @param {jsPDF} pdf - Instance jsPDF
-     * @param {Object} carte - Objet carte ({ id, type, title, content, color, image, ... })
+     * @param {Object} carte - Objet carte
      * @param {number} x - Position X du coin supérieur gauche
      * @param {number} y - Position Y du coin supérieur gauche
      */
     const drawCard = async (pdf, carte, x, y) => {
-        const { type, title, content, color, image } = carte; // Utilise les données de la carte
+        const { type, title, content, color, image } = carte;
 
         // Convertir la couleur hex en RGB
-        const rgbColor = hexToRgb(color || "#FFFFFF"); // Utilise la couleur de la carte ou blanc par défaut
+        const rgbColor = hexToRgb(color || "#FFFFFF");
 
         // Fond de la carte
         pdf.setFillColor(rgbColor[0], rgbColor[1], rgbColor[2]);
@@ -110,10 +108,10 @@ const CardPDFGenerator = ({ filter }) => {
         pdf.setLineWidth(0.5);
         pdf.roundedRect(x, y, CARD_WIDTH, CARD_HEIGHT, 8, 8, "S");
 
-        // Barre colorée latérale (optionnel, conservé de l'original)
+        // Barre colorée latérale
         if (type === "famille") {
             pdf.setFillColor(59, 130, 246); // bleu primaire
-            pdf.rect(x, y + 4, 6, CARD_HEIGHT - 8, "F"); // Ajusté pour être à l'intérieur du arrondi
+            pdf.rect(x, y + 4, 6, CARD_HEIGHT - 8, "F");
         } else if (type === "valeur") {
             pdf.setFillColor(99, 102, 241); // indigo
             pdf.rect(x, y + 4, 6, CARD_HEIGHT - 8, "F");
@@ -124,99 +122,191 @@ const CardPDFGenerator = ({ filter }) => {
         const contentWidth = CARD_WIDTH - MARGIN * 2 - 6;
         let currentY = y + MARGIN;
 
-        // 1. Titre
-        pdf.setFontSize(14);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(0, 0, 0);
-        // Centrer le titre dans l'espace disponible
-        pdf.text(title, x + CARD_WIDTH / 2, currentY + 10, {
-            // Ajuster Y pour centrer verticalement
-            align: "center",
-            maxWidth: contentWidth,
-        });
-        currentY += 30; // Espace après le titre
+        // Pour les cartes famille, la structure est différente
+        if (type === "famille") {
+            // 1. Titre en haut
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(title, x + CARD_WIDTH / 2, currentY + 10, {
+                align: "center",
+                maxWidth: contentWidth,
+            });
+            currentY += 30; // Espace après le titre
 
-        // 2. Image (si disponible)
-        let imageSectionHeight = 0;
-        if (image) {
-            // Utilise carte.image
-            imageSectionHeight = CARD_HEIGHT * 0.45; // Hauteur allouée à l'image
-            const maxWidth = contentWidth - MARGIN; // Largeur max pour l'image
-            const maxHeight = imageSectionHeight; // Hauteur max pour l'image
-            try {
-                const imageData = await loadImageForPDF(image); // Charge l'image à partir du chemin/URL fourni
+            // 2. Image au milieu
+            const imageSectionHeight = CARD_HEIGHT * 0.45;
+            if (image) {
+                const maxWidth = contentWidth - MARGIN;
+                const maxHeight = imageSectionHeight;
+                try {
+                    const imageData = await loadImageForPDF(image);
 
-                const ratio = Math.min(
-                    maxWidth / imageData.width,
-                    maxHeight / imageData.height
-                );
-                const imgWidth = imageData.width * ratio;
-                const imgHeight = imageData.height * ratio;
+                    const ratio = Math.min(
+                        maxWidth / imageData.width,
+                        maxHeight / imageData.height
+                    );
+                    const imgWidth = imageData.width * ratio;
+                    const imgHeight = imageData.height * ratio;
 
-                // Centrer l'image horizontalement et verticalement dans sa section
-                const imgX = contentX + (contentWidth - imgWidth) / 2;
-                const imgY = currentY + (maxHeight - imgHeight) / 2;
+                    // Centrer l'image
+                    const imgX = contentX + (contentWidth - imgWidth) / 2;
+                    const imgY = currentY + (maxHeight - imgHeight) / 2;
 
-                pdf.addImage(
-                    imageData.data,
-                    "JPEG",
-                    imgX,
-                    imgY,
-                    imgWidth,
-                    imgHeight
-                );
-            } catch (error) {
-                console.warn(
-                    `Impossible d'afficher l'image pour la carte "${title}": ${error.message}`
-                );
-                // Afficher un texte de remplacement si l'image échoue
-                pdf.setFontSize(10);
-                pdf.setFont("helvetica", "italic");
-                pdf.setTextColor(150, 150, 150);
-                pdf.text(
-                    "Image non disponible",
-                    x + CARD_WIDTH / 2,
-                    currentY + maxHeight / 2,
-                    { align: "center" }
-                );
+                    pdf.addImage(
+                        imageData.data,
+                        "JPEG",
+                        imgX,
+                        imgY,
+                        imgWidth,
+                        imgHeight
+                    );
+                } catch (error) {
+                    console.warn(
+                        `Impossible d'afficher l'image pour la carte "${title}": ${error.message}`
+                    );
+                    // Texte de remplacement si l'image échoue
+                    pdf.setFontSize(10);
+                    pdf.setFont("helvetica", "italic");
+                    pdf.setTextColor(150, 150, 150);
+                    pdf.text(
+                        "Image non disponible",
+                        x + CARD_WIDTH / 2,
+                        currentY + imageSectionHeight / 2,
+                        { align: "center" }
+                    );
+                }
+                currentY += imageSectionHeight + MARGIN / 2;
             }
-            currentY += imageSectionHeight + MARGIN / 2; // Espace après l'image
+
+            // 3. Description en bas (description chronologique)
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+
+            // Récupérer la description chronologique
+            let description = "";
+            if (selectedData.metadata?.chronologie?.[title]?.description) {
+                description =
+                    selectedData.metadata.chronologie[title].description;
+            }
+
+            // Ajuster le texte à la largeur
+            const textLines = pdf.splitTextToSize(description, contentWidth);
+
+            // Calculer la position pour le texte en bas
+            const totalTextHeight = textLines.length * 12;
+
+            // Positionner le texte
+            let textStartY = y + CARD_HEIGHT - MARGIN - totalTextHeight;
+            textStartY = Math.max(currentY, textStartY);
+
+            // Afficher le texte
+            textLines.forEach((line, index) => {
+                if (textStartY + index * 12 < y + CARD_HEIGHT - MARGIN / 2) {
+                    pdf.text(
+                        line,
+                        x + CARD_WIDTH / 2,
+                        textStartY + index * 12,
+                        {
+                            align: "center",
+                        }
+                    );
+                }
+            });
         } else {
-            // Si pas d'image, allouer un peu d'espace ou afficher un texte ?
-            // Pour l'instant, on ne fait rien de spécial, le contenu viendra après le titre.
-            currentY += MARGIN / 2; // Petit espace
-        }
+            // Pour les cartes valeur
+            // 1. Titre (propriété)
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(title, x + CARD_WIDTH / 2, currentY + 10, {
+                align: "center",
+                maxWidth: contentWidth,
+            });
+            currentY += 30;
 
-        // 3. Contenu / Description
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "normal");
-        pdf.setTextColor(0, 0, 0);
+            // 2. Image (si disponible)
+            let imageSectionHeight = 0;
+            if (image) {
+                imageSectionHeight = CARD_HEIGHT * 0.45;
+                const maxWidth = contentWidth - MARGIN;
+                const maxHeight = imageSectionHeight;
+                try {
+                    const imageData = await loadImageForPDF(image);
 
-        // Calculer l'espace restant pour le contenu
-        const remainingHeight = y + CARD_HEIGHT - currentY - MARGIN;
-        const textLines = pdf.splitTextToSize(content, contentWidth); // Utilise carte.content
+                    const ratio = Math.min(
+                        maxWidth / imageData.width,
+                        maxHeight / imageData.height
+                    );
+                    const imgWidth = imageData.width * ratio;
+                    const imgHeight = imageData.height * ratio;
 
-        // Positionner le texte de contenu au centre de l'espace restant
-        const lineHeight = 12; // Ajuster si nécessaire
-        const totalTextHeight = textLines.length * lineHeight;
-        let textStartY = currentY + (remainingHeight - totalTextHeight) / 2;
+                    // Centrer l'image
+                    const imgX = contentX + (contentWidth - imgWidth) / 2;
+                    const imgY = currentY + (maxHeight - imgHeight) / 2;
 
-        // S'assurer que le texte ne commence pas trop haut (empiète sur l'image/titre)
-        textStartY = Math.max(currentY, textStartY);
-
-        textLines.forEach((line) => {
-            // S'assurer que la ligne ne dépasse pas le bas de la carte
-            if (textStartY + lineHeight < y + CARD_HEIGHT - MARGIN / 2) {
-                pdf.text(line, x + CARD_WIDTH / 2, textStartY, {
-                    // Centrer chaque ligne
-                    align: "center",
-                    maxWidth: contentWidth, // Limiter la largeur pour le centrage
-                });
-                textStartY += lineHeight;
+                    pdf.addImage(
+                        imageData.data,
+                        "JPEG",
+                        imgX,
+                        imgY,
+                        imgWidth,
+                        imgHeight
+                    );
+                } catch (error) {
+                    console.warn(
+                        `Impossible d'afficher l'image pour la carte "${title}": ${error.message}`
+                    );
+                    pdf.setFontSize(10);
+                    pdf.setFont("helvetica", "italic");
+                    pdf.setTextColor(150, 150, 150);
+                    pdf.text(
+                        "Image non disponible",
+                        x + CARD_WIDTH / 2,
+                        currentY + maxHeight / 2,
+                        { align: "center" }
+                    );
+                }
+                currentY += imageSectionHeight + MARGIN / 2;
             }
-        });
+
+            // 3. Contenu / Description (valeur)
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(0, 0, 0);
+
+            // Calculer l'espace restant pour le contenu
+            const remainingHeight = y + CARD_HEIGHT - currentY - MARGIN;
+            const textLines = pdf.splitTextToSize(content, contentWidth);
+
+            // Positionner le texte
+            const lineHeight = 12;
+            const totalTextHeight = textLines.length * lineHeight;
+            let textStartY = currentY + (remainingHeight - totalTextHeight) / 2;
+            textStartY = Math.max(currentY, textStartY);
+
+            textLines.forEach((line, i) => {
+                if (
+                    textStartY + i * lineHeight <
+                    y + CARD_HEIGHT - MARGIN / 2
+                ) {
+                    pdf.text(
+                        line,
+                        x + CARD_WIDTH / 2,
+                        textStartY + i * lineHeight,
+                        {
+                            align: "center",
+                        }
+                    );
+                }
+            });
+        }
     };
 
+    /**
+     * Génère le PDF de cartes
+     */
     const handleGeneratePDF = async () => {
         if (!selectedData || typeof selectedData.getCards !== "function") {
             alert(
@@ -251,8 +341,9 @@ const CardPDFGenerator = ({ filter }) => {
                 130,
                 { align: "center", maxWidth: 400 }
             );
-            // --- Récupération et Traitement des Cartes ---
-            const cardsToProcess = selectedData.getCards(filter); // Utilise directement la méthode et le filtre
+
+            // --- Récupération des Cartes ---
+            const cardsToProcess = selectedData.getCards(filter);
 
             if (cardsToProcess.length === 0) {
                 alert(`Aucune carte à générer pour le filtre "${filter}".`);
@@ -264,7 +355,6 @@ const CardPDFGenerator = ({ filter }) => {
             pdf.addPage();
             pdf.setFontSize(18);
             pdf.setFont("helvetica", "bold");
-            // Titre de page plus générique car le filtre est appliqué
             pdf.text(
                 `Cartes (${filter})`,
                 pdf.internal.pageSize.width / 2,
@@ -272,8 +362,12 @@ const CardPDFGenerator = ({ filter }) => {
                 { align: "center" }
             );
 
-            let carteIndex = 0;
-            for (const carte of cardsToProcess) {
+            // Disposition des cartes sur les pages
+            for (
+                let carteIndex = 0;
+                carteIndex < cardsToProcess.length;
+                carteIndex++
+            ) {
                 const posIndex = carteIndex % CARDS_PER_PAGE;
 
                 // Nouvelle page si nécessaire
@@ -292,28 +386,23 @@ const CardPDFGenerator = ({ filter }) => {
                 const row = Math.floor(posIndex / CARDS_PER_ROW);
                 const col = posIndex % CARDS_PER_ROW;
 
-                // Ajuster les marges pour la grille de cartes
+                // Calcul des positions
                 const gridMarginX =
                     (pdf.internal.pageSize.width -
                         (CARDS_PER_ROW * CARD_WIDTH +
                             (CARDS_PER_ROW - 1) * 10)) /
                     2;
-                const gridMarginY = 50; // Marge en haut de la page de cartes
+                const gridMarginY = 50;
 
                 const x = gridMarginX + col * (CARD_WIDTH + 10);
                 const y = gridMarginY + row * (CARD_HEIGHT + 10);
 
                 // Dessiner la carte
-                await drawCard(pdf, carte, x, y); // Passe l'objet carte complet
-                carteIndex++;
+                await drawCard(pdf, cardsToProcess[carteIndex], x, y);
             }
 
-            // --- Page de Règles (conservée de l'original) ---
-            if (
-                selectedData.metadata &&
-                selectedData.metadata.regles &&
-                selectedData.metadata.regles.length > 0
-            ) {
+            // --- Page de Règles ---
+            if (selectedData.metadata?.regles?.length > 0) {
                 pdf.addPage();
                 pdf.setFontSize(24);
                 pdf.setFont("helvetica", "bold");
@@ -331,17 +420,16 @@ const CardPDFGenerator = ({ filter }) => {
                     yRegles += 30;
                     pdf.setFontSize(12);
                     pdf.setFont("helvetica", "normal");
-                    // Utiliser splitTextToSize pour la description des règles
                     const ruleLines = pdf.splitTextToSize(
                         regle.description,
                         pdf.internal.pageSize.width - 100
-                    ); // Largeur max
+                    );
                     pdf.text(ruleLines, 50, yRegles);
-                    yRegles += ruleLines.length * 14 + 20; // Ajuster l'espacement
+                    yRegles += ruleLines.length * 14 + 20;
                 });
             }
 
-            // --- Page d'Informations sur le Corpus (conservée) ---
+            // --- Page d'Informations ---
             if (selectedData.metadata) {
                 pdf.addPage();
                 pdf.setFontSize(24);
@@ -375,10 +463,7 @@ const CardPDFGenerator = ({ filter }) => {
                     );
                     yInfo += 20;
                 }
-                if (
-                    selectedData.metadata.objectifs &&
-                    selectedData.metadata.objectifs.length > 0
-                ) {
+                if (selectedData.metadata.objectifs?.length > 0) {
                     pdf.text("Objectifs pédagogiques:", 50, yInfo);
                     yInfo += 20;
                     selectedData.metadata.objectifs.forEach((objectif) => {
@@ -406,11 +491,6 @@ const CardPDFGenerator = ({ filter }) => {
             setIsGenerating(false);
         }
     };
-
-    // Vérifier si selectedData existe avant de rendre le bouton
-    if (!selectedData) {
-        return <p>Chargement des données...</p>;
-    }
 
     return (
         <Button

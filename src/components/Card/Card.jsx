@@ -19,13 +19,12 @@ const Card = ({
     title,
     content,
     color = "#FFFFFF",
-    image, // Nouvelle prop pour le chemin de l'image
+    image,
     style,
-    data, // Conservé pour getFamilyDescription
-    // propertyName, // Supprimé
+    data,
 }) => {
     const [imageError, setImageError] = useState(false);
-    console.log(image);
+
     const getTypeStyle = () => {
         switch (type) {
             case "famille":
@@ -48,18 +47,7 @@ const Card = ({
         return null;
     };
 
-    /**
-     * Formatte le contenu de la carte valeur - Conservé
-     */
-    const formatValueContent = () => {
-        if (type === "valeur") {
-            return content.replace(/\s*\([^)]*\)/, "");
-        }
-        return content;
-    };
-
     const familyDescription = getFamilyDescription();
-    const formattedContent = formatValueContent();
     const cardStyle = {
         ...(style || {}),
         backgroundColor: color,
@@ -67,21 +55,18 @@ const Card = ({
 
     // Fonction pour rendre l'image si elle existe et n'a pas généré d'erreur
     const renderImage = () => {
-        // Vérifier si la prop 'image' contient un chemin valide et si une erreur n'est pas survenue
         if (image && !imageError) {
             return (
-                <img
-                    // Utilise directement la prop 'image'. Assurez-vous que le chemin est correct
-                    // (ex: relatif au dossier public)
-                    src={image}
-                    alt={`Illustration pour ${title}`} // Alt text descriptif
-                    className="w-full h-32 object-cover mb-2 rounded-t-md" // Ajustez les classes Tailwind si besoin
-                    // Gestion de l'erreur si l'image ne peut être chargée
-                    onError={() => setImageError(true)}
-                />
+                <div className="px-2">
+                    <img
+                        src={image}
+                        alt={`Illustration pour ${title}`}
+                        className="w-full h-40 object-cover rounded-md mx-auto"
+                        onError={() => setImageError(true)}
+                    />
+                </div>
             );
         }
-        // Ne rien rendre si pas d'image ou si erreur de chargement
         return null;
     };
 
@@ -92,15 +77,18 @@ const Card = ({
                 className={`bg-white rounded-md shadow-md overflow-hidden ${getTypeStyle()}`}
                 style={cardStyle}
             >
-                {renderImage()} {/* Affiche l'image si disponible */}
                 <div className="p-4">
-                    <h3 className="text-lg font-semibold mb-1">{title}</h3>
+                    <h3 className="text-lg font-semibold mb-3 text-center">
+                        {title}
+                    </h3>
+                </div>
+                {renderImage()}
+                <div className="p-4">
                     {familyDescription ? (
-                        <p className="text-xs text-gray-500 italic mb-2">
-                            ({familyDescription})
+                        <p className="text-sm text-gray-700 text-center">
+                            {familyDescription}
                         </p>
                     ) : null}
-                    <p className="text-sm text-gray-700">{formattedContent}</p>
                 </div>
             </div>
         );
@@ -112,10 +100,10 @@ const Card = ({
             className={`bg-white rounded-md shadow-md overflow-hidden ${getTypeStyle()}`}
             style={cardStyle}
         >
-            {renderImage()} {/* Affiche l'image si disponible */}
+            {renderImage()}
             <div className="p-4">
                 <h3 className="text-lg font-semibold mb-1">{title}</h3>
-                <p className="text-sm text-gray-600">{formattedContent}</p>
+                <p className="text-sm text-gray-600">{content}</p>
             </div>
         </div>
     );
@@ -127,9 +115,9 @@ Card.propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     color: PropTypes.string,
-    image: PropTypes.string, // Ajout de la prop image (string ou null/undefined)
+    image: PropTypes.string,
     style: PropTypes.object,
-    data: PropTypes.object, // Conservé pour getFamilyDescription, le rendre optionnel si possible
+    data: PropTypes.object,
 };
 
 export default Card;

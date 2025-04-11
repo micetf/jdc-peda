@@ -273,18 +273,17 @@ class DataJeu {
         if (filter === "tout" || filter === "famille") {
             famillesTriees.forEach((famille) => {
                 const color = this.getColor("famille", famille);
-                const content = this.getContexte(famille) || famille;
                 // Pour une carte famille, on prend l'image définie pour la famille
-                const image =
-                    root + this.metadata.images.families[famille] || null;
+                const familyImage = this.metadata.images.families[famille];
+                const image = familyImage ? root + familyImage : null;
 
                 cards.push({
                     id: `famille-${famille}`,
                     type: "famille",
                     title: famille,
-                    content,
+                    content: "", // Content n'est plus utilisé pour les familles
                     color,
-                    image, // Image de la famille ajoutée
+                    image,
                     familyName: famille,
                 });
             });
@@ -305,8 +304,8 @@ class DataJeu {
                         cards.push({
                             id: `valeur-${famille}-${propriete}-${valeur}`,
                             type: "valeur",
-                            title: valeur,
-                            content: `Valeur de "${propriete}" pour la famille "${famille}"`, // Contenu générique
+                            title: propriete, // Mettre le nom de la propriété comme titre
+                            content: valeur, // Mettre uniquement la valeur comme contenu
                             color,
                             image, // Image prioritaire ajoutée
                             familyName: famille,
