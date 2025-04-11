@@ -1,13 +1,12 @@
-/**
- * Corpus de données sur les pratiques pédagogiques efficaces
- */
-const dataPedagogy = {
+// src/data/dataPedagogy.js
+import DataJeu from "./DataJeu";
+
+const dataPedagogy = new DataJeu({
     id: "pedagogy",
     titre: "Pratiques pédagogiques efficaces",
     description:
         "Jeu de cartes sur les temps forts d'une séance et leurs points d'attention",
 
-    // Les "tempsForts" du fichier original deviennent nos "familles"
     familles: [
         "Accueil",
         "Entrée de séance",
@@ -17,7 +16,6 @@ const dataPedagogy = {
         "Institutionnalisation",
     ],
 
-    // Les "typesPointsAttention" du fichier original deviennent nos "proprietes"
     proprietes: [
         "Objectifs visés",
         "Écueils possibles",
@@ -25,7 +23,6 @@ const dataPedagogy = {
         "Tâches concrètes",
     ],
 
-    // Les "pointsAttention" du fichier original deviennent nos "valeurs"
     valeurs: {
         Accueil: {
             "Objectifs visés": [
@@ -161,7 +158,6 @@ const dataPedagogy = {
         },
     },
 
-    // Métadonnées spécifiques à ce corpus
     metadata: {
         niveau: "Formation enseignants",
         objectifs: [
@@ -174,31 +170,39 @@ const dataPedagogy = {
                 nom: "La Séquence Parfaite",
                 description:
                     "Remettre les temps forts dans l'ordre chronologique d'une séance",
+                difficulte: "Facile",
+                joueurs: "2-6",
+                materiel: "Cartes Famille uniquement",
+                duree: "10-15 minutes",
+                deroulement:
+                    "Mélangez les cartes Famille et distribuez-les. Les joueurs doivent placer leurs cartes dans l'ordre logique d'une séance d'enseignement.",
             },
             {
                 nom: "Objectifs & Gestes",
                 description:
                     "Associer les objectifs visés et gestes professionnels à chaque temps fort",
+                difficulte: "Intermédiaire",
+                joueurs: "2-4",
+                materiel:
+                    "Cartes Famille et Valeur (Objectifs visés et Gestes professionnels)",
+                duree: "15-20 minutes",
+                deroulement:
+                    "Placez les cartes Famille en ligne. Mélangez les cartes Objectifs et Gestes et distribuez-les. À tour de rôle, chaque joueur place une carte sous la famille correspondante en justifiant son choix.",
             },
             {
                 nom: "Défis et Solutions",
                 description:
                     "Identifier les écueils possibles et les tâches concrètes pour chaque temps fort",
+                difficulte: "Avancé",
+                joueurs: "2-4",
+                materiel:
+                    "Cartes Famille et Valeur (Écueils possibles et Tâches concrètes)",
+                duree: "20-30 minutes",
+                deroulement:
+                    "Pour chaque famille, retrouvez les écueils possibles et proposez les tâches concrètes qui permettent de les éviter.",
             },
         ],
-        // Mapping des emojis spécifiques à ce corpus
-        emojis: {
-            Accueil: "wave",
-            "Entrée de séance": "door",
-            "Lancement d'activité": "rocket",
-            "Mise en activité": "hammer_and_wrench",
-            "Mise en commun": "bulb",
-            Institutionnalisation: "books",
-            "Objectifs visés": "dart",
-            "Écueils possibles": "warning",
-            "Gestes professionnels": "white_check_mark",
-            "Tâches concrètes": "clipboard",
-        },
+
         // Couleurs spécifiques à ce corpus
         colors: {
             famille: "#FFFDE7", // Jaune très clair (tempsForts)
@@ -207,15 +211,7 @@ const dataPedagogy = {
             "Écueils possibles": "#FFEBEE", // Rouge très clair
             "Tâches concrètes": "#F3E5F5", // Violet très clair
         },
-        // Ordre chronologique des familles, repris du fichier data.js original
-        ordre: {
-            Accueil: 1,
-            "Entrée de séance": 2,
-            "Lancement d'activité": 3,
-            "Mise en activité": 4,
-            "Mise en commun": 5,
-            Institutionnalisation: 6,
-        },
+
         // Structure pour les images
         images: {
             // Chemins des images pour les familles
@@ -237,7 +233,57 @@ const dataPedagogy = {
                 "Tâches concrètes": "pedagogy/properties/taches.jpg",
             },
         },
+
+        // Information chronologique pour chaque temps fort (remplace 'ordre')
+        chronologie: {
+            Accueil: {
+                ordre: 1,
+                description:
+                    "Moment initial de la séance où l'enseignant établit le contact avec les élèves et crée un climat propice à l'apprentissage.",
+            },
+            "Entrée de séance": {
+                ordre: 2,
+                description:
+                    "Moment où l'enseignant introduit le sujet, active les connaissances antérieures et présente les objectifs d'apprentissage.",
+            },
+            "Lancement d'activité": {
+                ordre: 3,
+                description:
+                    "Moment où l'enseignant présente les consignes et organise le travail pour l'activité principale.",
+            },
+            "Mise en activité": {
+                ordre: 4,
+                description:
+                    "Moment où les élèves travaillent activement sur la tâche proposée et où l'enseignant accompagne leurs apprentissages.",
+            },
+            "Mise en commun": {
+                ordre: 5,
+                description:
+                    "Moment où les élèves partagent et comparent leurs productions et où l'enseignant organise la confrontation des résultats.",
+            },
+            Institutionnalisation: {
+                ordre: 6,
+                description:
+                    "Moment final où l'enseignant formalise les savoirs construits pendant la séance et vérifie les acquis des élèves.",
+            },
+        },
+
+        // Descriptions contextuelles pour les temps forts (équivalent aux 'contextes' de l'histoire)
+        contextes: {
+            Accueil:
+                "Phase d'entrée en classe où l'enseignant accueille les élèves, prend en compte leur état émotionnel et crée un climat propice à l'apprentissage. Ce temps permet de marquer la transition et de préparer mentalement les élèves.",
+            "Entrée de séance":
+                "Phase d'introduction qui donne du sens à l'apprentissage en suscitant la curiosité et en explicitant les objectifs. Elle permet de faire le lien avec les connaissances antérieures et d'engager les élèves.",
+            "Lancement d'activité":
+                "Moment charnière où l'enseignant présente clairement les tâches à réaliser, vérifie la compréhension des consignes et organise les conditions matérielles du travail.",
+            "Mise en activité":
+                "Cœur de la séance où les élèves sont en situation d'apprentissage actif. L'enseignant observe, accompagne, et différencie son action selon les besoins identifiés.",
+            "Mise en commun":
+                "Phase d'échanges où les élèves confrontent leurs résultats et démarches. L'enseignant organise la discussion, favorise les interactions entre pairs et fait émerger les savoirs essentiels.",
+            Institutionnalisation:
+                "Phase finale qui permet d'ancrer les apprentissages en formalisant les savoirs et savoir-faire construits pendant la séance. Elle assure la transition vers les apprentissages futurs.",
+        },
     },
-};
+});
 
 export default dataPedagogy;

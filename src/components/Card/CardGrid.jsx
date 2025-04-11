@@ -1,3 +1,4 @@
+// src/components/Card/CardGrid.jsx
 import React, { useMemo, useCallback } from "react";
 import PropTypes from "prop-types";
 import Card from "./Card";
@@ -16,6 +17,7 @@ const CardGrid = ({ data, filter }) => {
             // Couleurs par défaut
             const DEFAULT_COLORS = {
                 famille: "#FFFDE7", // Jaune très clair
+                propriete: "#E3F2FD", // Bleu très clair
                 valeur: "#F3E5F5", // Violet très clair
             };
 
@@ -33,27 +35,24 @@ const CardGrid = ({ data, filter }) => {
         [data]
     );
 
-    // Fonction pour obtenir l'emoji d'une carte, mémorisée avec useCallback
-    const getCardEmoji = useCallback(
-        (type, name) => {
-            // Si le corpus a des emojis spécifiques, les utiliser
-            if (data.metadata && data.metadata.emojis) {
-                if (data.metadata.emojis[name]) {
-                    return data.metadata.emojis[name];
+    // Fonction pour formater le contenu de la carte selon son type
+    const formatCardContent = useCallback(
+        (type, famille, propriete, valeur) => {
+            if (type === "famille") {
+                // Inclure des informations chronologiques si disponibles
+                if (data.metadata?.chronologie?.[famille]) {
+                    const chrono = data.metadata.chronologie[famille];
+                    return `${famille} (${chrono.debut} à ${chrono.fin})`;
                 }
+                return `Famille: ${famille}`;
+            } else {
+                return `"${valeur}" est une valeur de "${propriete}" pour la famille "${famille}"`;
             }
-
-            // Emojis par défaut selon le type
-            const defaultEmojis = {
-                famille: "books",
-                valeur: "clipboard",
-            };
-
-            return defaultEmojis[type] || "page_facing_up";
         },
         [data]
     );
 
+    // Générer les cartes selon le filtre
     const cards = useMemo(() => {
         const result = [];
 
@@ -61,14 +60,14 @@ const CardGrid = ({ data, filter }) => {
         if (filter === "tout" || filter === "famille") {
             data.familles.forEach((famille) => {
                 const colorHex = getCardColor("famille", famille);
+                const content = formatCardContent("famille", famille);
 
                 result.push({
                     id: `famille-${famille}`,
                     type: "famille",
                     title: famille,
-                    content: `Famille: ${famille}`,
+                    content: content,
                     color: colorHex,
-                    icon: getCardEmoji("famille", famille),
                 });
             });
         }
@@ -80,14 +79,19 @@ const CardGrid = ({ data, filter }) => {
                     const valeurs = data.valeurs[famille][propriete];
                     valeurs.forEach((valeur) => {
                         const colorHex = getCardColor("valeur", propriete);
+                        const content = formatCardContent(
+                            "valeur",
+                            famille,
+                            propriete,
+                            valeur
+                        );
 
                         result.push({
                             id: `valeur-${famille}-${propriete}-${valeur}`,
                             type: "valeur",
                             title: valeur,
-                            content: `Valeur de "${propriete}" pour la famille "${famille}"`,
+                            content: content,
                             color: colorHex,
-                            icon: getCardEmoji("valeur", propriete),
                             propertyName: propriete,
                         });
                     });
@@ -96,15 +100,21 @@ const CardGrid = ({ data, filter }) => {
         }
 
         return result;
-    }, [data, filter, getCardColor, getCardEmoji]);
+    }, [data, filter, getCardColor, formatCardContent]);
 
-    // Convertir les couleurs hex en classes Tailwind ou en styles inline
-    const getColorStyle = useCallback((hexColor) => {
-        return { backgroundColor: hexColor };
-    }, []);
+    // Si aucune carte à afficher
+    if (cards.length === 0) {
+        return (
+            <div className="py-8 text-center">
+                <p className="text-gray-500">
+                    Aucune carte à afficher avec le filtre sélectionné.
+                </p>
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {cards.map((card) => (
                 <Card
                     key={card.id}
@@ -112,8 +122,7 @@ const CardGrid = ({ data, filter }) => {
                     title={card.title}
                     content={card.content}
                     color={card.color}
-                    icon={card.icon}
-                    style={getColorStyle(card.color)}
+                    style={null}
                     data={data}
                     propertyName={card.propertyName}
                 />
@@ -130,6 +139,7 @@ CardGrid.propTypes = {
         familles: PropTypes.arrayOf(PropTypes.string).isRequired,
         proprietes: PropTypes.arrayOf(PropTypes.string).isRequired,
         valeurs: PropTypes.object.isRequired,
+        metadata: PropTypes.object,
     }).isRequired,
     filter: PropTypes.oneOf(["tout", "famille", "valeur"]),
 };

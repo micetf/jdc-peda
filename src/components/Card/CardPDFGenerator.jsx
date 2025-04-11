@@ -1,16 +1,12 @@
 // src/components/Card/CardPDFGenerator.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useData } from "../Data/DataContext";
 import Button from "../UI/Button";
 import jsPDF from "jspdf";
-import {
-    preloadAllIcons,
-    heroIconToDataUrl,
-} from "../../utils/pdfIconRenderer";
 
 /**
- * Composant pour générer un PDF de cartes pédagogiques avec des illustrations Heroicons
+ * Composant pour générer un PDF de cartes pédagogiques avec des illustrations
  * @param {Object} props - Propriétés du composant
  * @param {string} props.filter - Filtre à appliquer (famille, valeur, tout)
  * @returns {JSX.Element} Bouton de génération de PDF
@@ -18,8 +14,6 @@ import {
 const CardPDFGenerator = ({ filter }) => {
     const { selectedData } = useData();
     const [isGenerating, setIsGenerating] = useState(false);
-    const [iconCache, setIconCache] = useState(null);
-    const [isPreloading, setIsPreloading] = useState(true);
 
     // Configuration des cartes - 9 cartes par page (3x3)
     const CARD_WIDTH = 172; // Environ 6 cm
@@ -27,27 +21,45 @@ const CardPDFGenerator = ({ filter }) => {
     const MARGIN = 15; // Marge intérieure
     const CARDS_PER_ROW = 3; // 3 colonnes
     const CARDS_PER_PAGE = 9; // 9 cartes par page
-    const ICON_SIZE = 48; // Taille de l'icône en pixels
 
-    // Précharger les icônes au montage du composant
-    useEffect(() => {
-        const loadIcons = async () => {
-            setIsPreloading(true);
-            try {
-                const icons = await preloadAllIcons(ICON_SIZE);
-                setIconCache(icons);
-            } catch (error) {
-                console.error(
-                    "Erreur lors du préchargement des icônes:",
-                    error
-                );
-            } finally {
-                setIsPreloading(false);
-            }
-        };
+    /**
+     * Charge une image à partir d'une URL et la convertit en format utilisable par jsPDF
+     * @param {string} url - URL de l'image à charger
+     * @returns {Promise<object>} - Promise contenant les données de l'image et ses dimensions
+     */
+    const loadImageForPDF = async (url) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
 
-        loadIcons();
-    }, []);
+                try {
+                    const imageData = canvas.toDataURL("image/jpeg");
+                    resolve({
+                        data: imageData,
+                        width: img.width,
+                        height: img.height,
+                    });
+                } catch (e) {
+                    console.error(
+                        "Erreur lors de la conversion de l'image:",
+                        e
+                    );
+                    reject(e);
+                }
+            };
+            img.onerror = (e) => {
+                console.error("Erreur lors du chargement de l'image:", url, e);
+                reject(e);
+            };
+            img.src = url;
+        });
+    };
 
     // Fonction pour obtenir le nom de la propriété formaté
     const formatPropertyName = (propertyName) => {
@@ -97,35 +109,17 @@ const CardPDFGenerator = ({ filter }) => {
         return DEFAULT_COLORS[type] || "#FFFFFF";
     };
 
-    // Fonction pour obtenir le nom de l'icône d'une carte
-    const getCardIconName = (type, name) => {
-        // Si le corpus a des emojis/icônes spécifiques, utiliser leur nom
-        if (selectedData.metadata && selectedData.metadata.emojis) {
-            if (selectedData.metadata.emojis[name]) {
-                return selectedData.metadata.emojis[name];
-            }
-        }
-
-        // Noms d'icônes par défaut selon le type
-        const defaultIcons = {
-            famille: "books",
-            propriete: "bulb",
-            valeur: "clipboard",
-        };
-
-        return defaultIcons[type] || "page_facing_up";
-    };
-
-    // Fonction pour dessiner une carte
+    // Fonction modifiée pour dessiner une carte avec une disposition verticale équilibrée
     const drawCard = async (
         pdf,
         title,
         content,
-        iconName,
         color,
         x,
         y,
-        type
+        type,
+        famille = null,
+        propriete = null
     ) => {
         // Convertir la couleur hex en RGB
         const rgbColor = hexToRgb(color);
@@ -148,79 +142,267 @@ const CardPDFGenerator = ({ filter }) => {
             pdf.rect(x, y, 6, CARD_HEIGHT, "F");
         }
 
-        // Titre de la carte (au-dessus de l'icône)
-        const titleY = y + MARGIN + 10;
-        pdf.setFontSize(14);
-        pdf.setFont("helvetica", "bold");
-        pdf.setTextColor(0, 0, 0);
-        pdf.text(title, x + CARD_WIDTH / 2, titleY, {
-            align: "center",
-            maxWidth: CARD_WIDTH - MARGIN * 2,
-        });
+        // Pour les cartes de type "famille", diviser la carte en trois sections équitablement espacées
+        if (type === "famille") {
+            // 1. TITRE (section supérieure - 1/3 de la carte)
+            const titleY = y + MARGIN + 15;
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(title, x + CARD_WIDTH / 2, titleY, {
+                align: "center",
+                maxWidth: CARD_WIDTH - MARGIN * 2,
+            });
 
-        // Dessiner l'icône au centre
-        try {
-            // Utiliser l'icône pré-chargée si disponible, sinon la générer à la volée
-            let iconData;
-            if (iconCache && iconCache[iconName]) {
-                iconData = iconCache[iconName];
-            } else {
-                // Utiliser l'icône par défaut selon le type si l'icône spécifique n'est pas disponible
-                const defaultIconName =
-                    type === "famille" ? "default_famille" : "default_valeur";
-                iconData =
-                    iconCache && iconCache[defaultIconName]
-                        ? iconCache[defaultIconName]
-                        : await heroIconToDataUrl(iconName, type, ICON_SIZE);
+            // Ligne séparatrice entre le titre et l'image
+            const separatorY1 = y + CARD_HEIGHT / 3;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(0.5);
+            pdf.line(
+                x + MARGIN,
+                separatorY1,
+                x + CARD_WIDTH - MARGIN,
+                separatorY1
+            );
+
+            // 2. IMAGE (section centrale - 1/3 de la carte)
+            try {
+                let imagePath = null;
+
+                // Récupérer le chemin de l'image de la famille
+                if (selectedData.metadata.images.families && famille) {
+                    const imageName =
+                        selectedData.metadata.images.families[famille];
+                    if (imageName) {
+                        imagePath = `/src/assets/illustrations/${imageName}`;
+                    }
+                }
+
+                // Si un chemin d'image a été trouvé, essayer de charger l'image
+                if (imagePath) {
+                    try {
+                        const imageData = await loadImageForPDF(imagePath);
+
+                        // Calculer les dimensions de l'image pour la section centrale
+                        const maxWidth = CARD_WIDTH - MARGIN * 4;
+                        const maxHeight = CARD_HEIGHT / 3 - 10;
+
+                        // Calculer le ratio pour maintenir les proportions
+                        const ratio = Math.min(
+                            maxWidth / imageData.width,
+                            maxHeight / imageData.height
+                        );
+
+                        const width = imageData.width * ratio;
+                        const height = imageData.height * ratio;
+
+                        // Position centrée dans la section centrale
+                        const imageX = x + (CARD_WIDTH - width) / 2;
+                        const imageY =
+                            y +
+                            CARD_HEIGHT / 3 +
+                            (CARD_HEIGHT / 3 - height) / 2;
+
+                        // Ajouter l'image au PDF
+                        pdf.addImage(
+                            imageData.data,
+                            "JPEG",
+                            imageX,
+                            imageY,
+                            width,
+                            height
+                        );
+                    } catch (error) {
+                        console.error(
+                            `Erreur lors de l'ajout de l'image au PDF: ${imagePath}`,
+                            error
+                        );
+
+                        // Texte alternatif au centre si l'image ne peut pas être chargée
+                        pdf.setFontSize(12);
+                        pdf.setFont("helvetica", "italic");
+                        pdf.setTextColor(150, 150, 150);
+                        pdf.text(
+                            title,
+                            x + CARD_WIDTH / 2,
+                            y + CARD_HEIGHT / 2,
+                            {
+                                align: "center",
+                            }
+                        );
+                    }
+                } else {
+                    // Texte alternatif au centre si aucune image n'est disponible
+                    pdf.setFontSize(12);
+                    pdf.setFont("helvetica", "italic");
+                    pdf.setTextColor(150, 150, 150);
+                    pdf.text(title, x + CARD_WIDTH / 2, y + CARD_HEIGHT / 2, {
+                        align: "center",
+                    });
+                }
+            } catch (error) {
+                console.error(
+                    "Erreur lors de la recherche du chemin d'image:",
+                    error
+                );
             }
 
-            const iconX = x + (CARD_WIDTH - ICON_SIZE) / 2;
-            const iconY = y + CARD_HEIGHT / 2 - ICON_SIZE / 2;
-            pdf.addImage(iconData, "PNG", iconX, iconY, ICON_SIZE, ICON_SIZE);
-        } catch (error) {
-            console.error(
-                `Erreur lors du dessin de l'icône ${iconName}:`,
-                error
+            // Ligne séparatrice entre l'image et la description
+            const separatorY2 = y + (CARD_HEIGHT / 3) * 2;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(0.5);
+            pdf.line(
+                x + MARGIN,
+                separatorY2,
+                x + CARD_WIDTH - MARGIN,
+                separatorY2
             );
-            // Fallback en cas d'erreur
-            const iconY = y + CARD_HEIGHT / 2;
-            pdf.setFontSize(14);
+
+            // 3. DESCRIPTION (section inférieure - 1/3 de la carte)
+            let description = "";
+
+            // Récupérer la description de la chronologie si disponible
+            if (selectedData.metadata?.chronologie?.[famille]) {
+                description =
+                    selectedData.metadata.chronologie[famille].description;
+            } else {
+                description = "Pas de description disponible";
+            }
+
+            // Position de départ pour le texte de description
+            const descriptionY = y + (CARD_HEIGHT / 3) * 2 + MARGIN;
+
+            pdf.setFontSize(10);
             pdf.setFont("helvetica", "normal");
-            pdf.text(`[Icône: ${iconName}]`, x + CARD_WIDTH / 2, iconY, {
-                align: "center",
+            pdf.setTextColor(0, 0, 0);
+
+            // Diviser la description en lignes pour l'adapter à l'espace disponible
+            const textLines = pdf.splitTextToSize(
+                description,
+                CARD_WIDTH - MARGIN * 2
+            );
+
+            // Ajouter chaque ligne de texte
+            let currentY = descriptionY;
+            const lineHeight = 12;
+
+            textLines.forEach((line) => {
+                if (currentY + lineHeight < y + CARD_HEIGHT - MARGIN) {
+                    pdf.text(line, x + CARD_WIDTH / 2, currentY, {
+                        align: "center",
+                    });
+                    currentY += lineHeight;
+                }
             });
         }
+        // Pour les cartes de type "valeur", conserver le layout existant
+        else if (type === "valeur") {
+            // Titre de la carte
+            const titleY = y + MARGIN + 10;
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0, 0, 0);
+            pdf.text(title, x + CARD_WIDTH / 2, titleY, {
+                align: "center",
+                maxWidth: CARD_WIDTH - MARGIN * 2,
+            });
 
-        // Contenu de la carte (en-dessous de l'icône)
-        const contentY = y + CARD_HEIGHT - MARGIN - 20;
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "normal");
-        pdf.text(content, x + CARD_WIDTH / 2, contentY, {
-            align: "center",
-            maxWidth: CARD_WIDTH - MARGIN * 2,
-        });
+            // Ajout de l'image si disponible
+            try {
+                let imagePath = null;
 
-        // Type de carte (en petit en bas)
-        pdf.setFontSize(8);
-        pdf.setTextColor(100, 100, 100);
-        pdf.text(`Type: ${type}`, x + CARD_WIDTH / 2, y + CARD_HEIGHT - 5, {
-            align: "center",
-        });
+                // Récupérer le chemin de l'image de la propriété
+                if (selectedData.metadata.images.properties && propriete) {
+                    const imageName =
+                        selectedData.metadata.images.properties[propriete];
+                    if (imageName) {
+                        imagePath = `/src/assets/illustrations/${imageName}`;
+                    }
+                }
+
+                // Si un chemin d'image a été trouvé, essayer de charger l'image
+                if (imagePath) {
+                    try {
+                        const imageData = await loadImageForPDF(imagePath);
+
+                        // Calculer les dimensions de l'image
+                        const maxWidth = CARD_WIDTH - MARGIN * 2;
+                        const maxHeight = CARD_HEIGHT * 0.4;
+
+                        // Calculer le ratio pour maintenir les proportions
+                        const ratio = Math.min(
+                            maxWidth / imageData.width,
+                            maxHeight / imageData.height
+                        );
+
+                        const width = imageData.width * ratio;
+                        const height = imageData.height * ratio;
+
+                        // Position centrée
+                        const imageX = x + (CARD_WIDTH - width) / 2;
+                        const middleY = y + CARD_HEIGHT / 2;
+                        const imageY = middleY - height / 2;
+
+                        // Ajouter l'image au PDF
+                        pdf.addImage(
+                            imageData.data,
+                            "JPEG",
+                            imageX,
+                            imageY,
+                            width,
+                            height
+                        );
+
+                        // Préparer le contenu (sans le nom de la famille)
+                        const displayContent = content.replace(
+                            /\s*\([^)]*\)/,
+                            ""
+                        );
+
+                        // Contenu sous l'image
+                        const contentY = imageY + height + 20;
+                        pdf.setFontSize(10);
+                        pdf.setFont("helvetica", "normal");
+                        pdf.text(displayContent, x + CARD_WIDTH / 2, contentY, {
+                            align: "center",
+                            maxWidth: CARD_WIDTH - MARGIN * 2,
+                        });
+
+                        return;
+                    } catch (error) {
+                        console.error(
+                            `Erreur lors de l'ajout de l'image au PDF: ${imagePath}`,
+                            error
+                        );
+                        // Continuer avec le rendu sans image
+                    }
+                }
+            } catch (error) {
+                console.error(
+                    "Erreur lors de la recherche du chemin d'image:",
+                    error
+                );
+            }
+
+            // Si on arrive ici, c'est qu'il n'y a pas d'image ou qu'il y a eu une erreur
+            // Contenu de la carte (au centre)
+            const displayContent = content.replace(/\s*\([^)]*\)/, "");
+            const contentY = y + CARD_HEIGHT / 2;
+
+            pdf.setFontSize(10);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(displayContent, x + CARD_WIDTH / 2, contentY, {
+                align: "center",
+                maxWidth: CARD_WIDTH - MARGIN * 2,
+            });
+        }
     };
-
     const handleGeneratePDF = async () => {
         if (isGenerating) return;
 
         setIsGenerating(true);
 
         try {
-            // S'assurer que les icônes sont préchargées
-            let iconsReady = iconCache;
-            if (!iconsReady) {
-                iconsReady = await preloadAllIcons(ICON_SIZE);
-                setIconCache(iconsReady);
-            }
-
             // Initialiser le PDF
             const pdf = new jsPDF("p", "pt", "a4");
             let pageCounter = 1;
@@ -236,7 +418,6 @@ const CardPDFGenerator = ({ filter }) => {
                         type: "famille",
                         title: famille,
                         content: `${famille}`,
-                        iconName: getCardIconName("famille", famille),
                         color: getCardColor("famille", famille),
                     });
                 });
@@ -253,8 +434,10 @@ const CardPDFGenerator = ({ filter }) => {
                                 type: "valeur",
                                 title: formatPropertyName(propriete),
                                 content: `${valeur} (${famille})`,
-                                iconName: getCardIconName("valeur", propriete),
                                 color: getCardColor("valeur", propriete),
+                                famille: famille,
+                                propriete: propriete,
+                                valeur: valeur,
                             });
                         });
                     });
@@ -284,22 +467,6 @@ const CardPDFGenerator = ({ filter }) => {
                 130,
                 { align: "center", maxWidth: 400 }
             );
-
-            // Ajouter une image d'exemple en bas de la page de titre si disponible
-            if (iconCache && Object.keys(iconCache).length > 0) {
-                const sampleIconName = Object.keys(iconCache)[0];
-                const sampleIconData = iconCache[sampleIconName];
-                const iconX = pdf.internal.pageSize.width / 2 - ICON_SIZE;
-                const iconY = 200;
-                pdf.addImage(
-                    sampleIconData,
-                    "PNG",
-                    iconX,
-                    iconY,
-                    ICON_SIZE * 2,
-                    ICON_SIZE * 2
-                );
-            }
 
             // Information sur le nombre de cartes
             pdf.setFontSize(12);
@@ -354,11 +521,12 @@ const CardPDFGenerator = ({ filter }) => {
                         pdf,
                         carte.title,
                         carte.content,
-                        carte.iconName,
                         carte.color,
                         x,
                         y,
-                        carte.type
+                        carte.type,
+                        carte.title, // Passer le nom de la famille
+                        null // Pas de propriété pour les cartes famille
                     );
 
                     carteIndex++;
@@ -400,11 +568,12 @@ const CardPDFGenerator = ({ filter }) => {
                         pdf,
                         carte.title,
                         carte.content,
-                        carte.iconName,
                         carte.color,
                         x,
                         y,
-                        carte.type
+                        carte.type,
+                        carte.famille, // Passer le nom de la famille
+                        carte.propriete // Passer le nom de la propriété
                     );
 
                     carteIndex++;
@@ -501,7 +670,7 @@ const CardPDFGenerator = ({ filter }) => {
             if (selectedData.metadata && selectedData.metadata.objectifs) {
                 pdf.text("Objectifs pédagogiques:", 50, 200);
                 let y = 220;
-                selectedData.metadata.objectifs.forEach((objectif, index) => {
+                selectedData.metadata.objectifs.forEach((objectif) => {
                     pdf.text(`• ${objectif}`, 70, y, { maxWidth: 480 });
                     y += 30;
                 });
@@ -539,33 +708,9 @@ const CardPDFGenerator = ({ filter }) => {
             variant="primary"
             onClick={handleGeneratePDF}
             className="flex items-center justify-center gap-2"
-            disabled={isGenerating || isPreloading}
+            disabled={isGenerating}
         >
-            {isPreloading ? (
-                <>
-                    <svg
-                        className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                    >
-                        <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                        ></circle>
-                        <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                    </svg>
-                    Chargement des icônes...
-                </>
-            ) : isGenerating ? (
+            {isGenerating ? (
                 <>
                     <svg
                         className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"

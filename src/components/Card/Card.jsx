@@ -1,11 +1,6 @@
 // src/components/Card/Card.jsx
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import HeroIconDisplay from "../UI/HeroIconDisplay";
-import {
-    getFamilyImagePath,
-    getPropertyImagePath,
-} from "../../utils/imageUtils";
 
 /**
  * Composant de carte pédagogique
@@ -14,7 +9,6 @@ import {
  * @param {string} props.title - Titre de la carte
  * @param {string} props.content - Contenu de la carte
  * @param {string} props.color - Couleur de la carte (hex)
- * @param {string} props.icon - Icône de la carte (nom de l'emoji)
  * @param {Object} props.style - Styles additionnels
  * @param {Object} props.data - Data contenant les informations du jeu
  * @param {string} props.propertyName - Nom de la propriété (pour les cartes valeur)
@@ -25,7 +19,6 @@ const Card = ({
     title,
     content,
     color = "#FFFFFF",
-    icon,
     style,
     data,
     propertyName,
@@ -47,16 +40,26 @@ const Card = ({
      * Obtient le chemin de l'image en fonction du type de carte
      */
     const getImagePath = () => {
-        if (!data) return null;
+        if (!data || !data.metadata || !data.metadata.images) return null;
 
         try {
             // Pour les cartes de type famille
-            if (type === "famille") {
-                return getFamilyImagePath(data, title);
+            if (type === "famille" && data.metadata.images.families) {
+                const imageName = data.metadata.images.families[title];
+                if (imageName) {
+                    return `/src/assets/illustrations/${imageName}`;
+                }
             }
             // Pour les cartes de type valeur
-            else if (type === "valeur" && propertyName) {
-                return getPropertyImagePath(data, propertyName);
+            else if (
+                type === "valeur" &&
+                propertyName &&
+                data.metadata.images.properties
+            ) {
+                const imageName = data.metadata.images.properties[propertyName];
+                if (imageName) {
+                    return `/src/assets/illustrations/${imageName}`;
+                }
             }
         } catch (error) {
             console.error(
@@ -68,58 +71,124 @@ const Card = ({
         return null;
     };
 
+    /**
+     * Obtient la description de la famille (pour les cartes famille)
+     */
+    const getFamilyDescription = () => {
+        if (type === "famille" && data?.metadata?.chronologie?.[title]) {
+            return data.metadata.chronologie[title].description;
+        }
+        return null;
+    };
+
+    /**
+     * Formatte le contenu de la carte valeur en supprimant les parenthèses avec le nom de la famille
+     */
+    const formatValueContent = () => {
+        if (type === "valeur") {
+            // Supprimer la partie entre parenthèses (nom de la famille)
+            return content.replace(/\s*\([^)]*\)/, "");
+        }
+        return content;
+    };
+
     // Obtenir le chemin de l'image
     const imagePath = getImagePath();
+    // Obtenir la description de la famille si disponible
+    const familyDescription = getFamilyDescription();
+    // Formater le contenu pour les cartes valeur
+    const formattedContent = formatValueContent();
 
     // Combiner les styles
     const cardStyle = {
         ...(style || {}),
-        backgroundColor: color, // Utilisation de la propriété color
+        backgroundColor: color,
     };
 
-    return (
-        <div
-            className={`card ${getTypeStyle()} h-full overflow-hidden`}
-            style={cardStyle}
-        >
-            {/* En-tête de la carte avec titre et icône */}
-            <div className="card-header flex items-center justify-between">
-                <h3 className="text-lg font-bold">{title}</h3>
-                {icon && <HeroIconDisplay name={icon} type={type} size={28} />}
-            </div>
+    // Rendu pour les cartes de type "famille"
+    if (type === "famille") {
+        return (
+            <div
+                className={`card ${getTypeStyle()} h-full overflow-hidden flex flex-col`}
+                style={cardStyle}
+            >
+                {/* Titre de la carte - 1/3 de l'espace */}
+                <div className="pt-4 pb-2 px-4">
+                    <h3 className="text-xl font-bold text-center">{title}</h3>
+                </div>
 
-            {/* Image de la carte si disponible */}
-            {imagePath && (
-                <div className="h-40 overflow-hidden">
-                    {!imageError ? (
+                {/* Image centrée - 1/3 de l'espace */}
+                <div className="flex-1 flex items-center justify-center p-2">
+                    {imagePath && !imageError ? (
                         <img
                             src={imagePath}
                             alt={`Illustration pour ${title}`}
-                            className="w-full h-full object-cover"
-                            onError={() => setImageError(true)}
+                            className="max-h-32 max-w-full object-contain transition-opacity duration-200"
+                            onError={() => {
+                                console.warn(
+                                    `Erreur de chargement de l'image: ${imagePath}`
+                                );
+                                setImageError(true);
+                            }}
+                            onLoad={() => setImageError(false)}
                         />
                     ) : (
-                        <img
-                            src={
-                                type === "famille"
-                                    ? "/src/assets/illustrations/default/families.jpg"
-                                    : "/src/assets/illustrations/default/properties.jpg"
-                            }
-                            alt={`Illustration par défaut pour ${title}`}
-                            className="w-full h-full object-cover"
-                        />
+                        <div className="text-center p-4 text-gray-500 italic">
+                            {title}
+                        </div>
                     )}
                 </div>
-            )}
 
-            {/* Contenu de la carte */}
-            <div className="card-body">
-                <p>{content}</p>
+                {/* Description - 1/3 de l'espace */}
+                <div className="p-4 mt-auto border-t border-gray-200">
+                    {familyDescription ? (
+                        <p className="text-sm">{familyDescription}</p>
+                    ) : (
+                        <p className="text-sm italic text-gray-500">
+                            Pas de description disponible
+                        </p>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Rendu pour les cartes de type "valeur"
+    return (
+        <div
+            className={`card ${getTypeStyle()} h-full overflow-hidden flex flex-col`}
+            style={cardStyle}
+        >
+            {/* En-tête de la carte avec titre */}
+            <div className="card-header">
+                <h3 className="text-lg font-bold truncate">{title}</h3>
             </div>
 
-            {/* Pied de la carte avec type */}
-            <div className="card-footer text-xs text-gray-500 italic">
-                Type: {type}
+            {/* Image de la carte centrée */}
+            <div className="flex-grow flex items-center justify-center py-2">
+                {imagePath && !imageError ? (
+                    <img
+                        src={imagePath}
+                        alt={`Illustration pour ${title}`}
+                        className="max-h-32 max-w-full object-contain transition-opacity duration-200"
+                        onError={() => {
+                            console.warn(
+                                `Erreur de chargement de l'image: ${imagePath}`
+                            );
+                            setImageError(true);
+                        }}
+                        onLoad={() => setImageError(false)}
+                    />
+                ) : (
+                    <div className="text-center p-4 text-gray-500 italic">
+                        {title}
+                    </div>
+                )}
+            </div>
+
+            {/* Contenu de la carte */}
+            <div className="card-body mt-auto">
+                <p className="text-sm">{formattedContent}</p>
             </div>
         </div>
     );
@@ -130,7 +199,6 @@ Card.propTypes = {
     title: PropTypes.string.isRequired,
     content: PropTypes.string,
     color: PropTypes.string,
-    icon: PropTypes.string,
     style: PropTypes.object,
     data: PropTypes.object,
     propertyName: PropTypes.string,
@@ -139,7 +207,6 @@ Card.propTypes = {
 Card.defaultProps = {
     content: "",
     color: "#FFFFFF",
-    icon: null,
     style: null,
     data: null,
     propertyName: "",

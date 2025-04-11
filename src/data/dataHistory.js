@@ -1,7 +1,7 @@
-/**
- * Data de données sur l'histoire, enrichi avec références d'images
- */
-const dataHistory = {
+// src/data/dataHistory.js
+import DataJeu from "./DataJeu";
+
+const dataHistory = new DataJeu({
     id: "history",
     titre: "Chronologie de l'Histoire",
     description:
@@ -198,7 +198,7 @@ const dataHistory = {
             },
         ],
 
-        // Couleurs spécifiques à ce data
+        // Couleurs spécifiques à ce corpus
         colors: {
             famille: "#FFFDE7", // Jaune très clair
             "Habitat et architecture": "#E8F5E9", // Vert très clair
@@ -207,7 +207,7 @@ const dataHistory = {
             "Vie quotidienne": "#FFF3E0", // Orange très clair
         },
 
-        // Structure simplifiée pour les images
+        // Structure pour les images
         images: {
             // Chemins des images pour les familles
             families: {
@@ -234,55 +234,47 @@ const dataHistory = {
             Préhistoire: {
                 debut: "-3 000 000",
                 fin: "-3 000",
+                ordre: 1,
                 description:
                     "De l'apparition des premiers hominidés jusqu'à l'invention de l'écriture",
             },
             Antiquité: {
                 debut: "-3 000",
                 fin: "476",
+                ordre: 2,
                 description:
                     "De l'invention de l'écriture jusqu'à la chute de l'Empire romain d'Occident",
             },
             "Moyen Âge": {
                 debut: "476",
                 fin: "1492",
+                ordre: 3,
                 description:
                     "De la chute de l'Empire romain d'Occident jusqu'à la découverte de l'Amérique",
             },
             Renaissance: {
                 debut: "1492",
                 fin: "1610",
+                ordre: 4,
                 description:
                     "De la découverte de l'Amérique jusqu'à l'assassinat d'Henri IV",
             },
             "Époque moderne": {
                 debut: "1610",
                 fin: "1789",
+                ordre: 5,
                 description:
                     "De l'assassinat d'Henri IV jusqu'à la Révolution française",
             },
             "Époque contemporaine": {
                 debut: "1789",
                 fin: "aujourd'hui",
+                ordre: 6,
                 description: "De la Révolution française jusqu'à nos jours",
             },
         },
 
-        // Emojis pour chaque type
-        emojis: {
-            Préhistoire: "books",
-            Antiquité: "books",
-            "Moyen Âge": "books",
-            Renaissance: "books",
-            "Époque moderne": "books",
-            "Époque contemporaine": "books",
-            "Habitat et architecture": "bulb",
-            "Personnages importants": "dart",
-            "Inventions et découvertes": "clipboard",
-            "Vie quotidienne": "hammer_and_wrench",
-        },
-
-        // Contextes historiques pour enrichir les cartes
+        // Descriptions contextuelles pour chaque famille
         contextes: {
             Préhistoire:
                 "Période la plus longue de l'histoire humaine, marquée par l'évolution biologique de l'homme, la fabrication des premiers outils et le développement des premières sociétés.",
@@ -298,6 +290,6 @@ const dataHistory = {
                 "Période de profonds bouleversements technologiques, politiques et sociaux, marquée par l'industrialisation, la mondialisation et les conflits mondiaux.",
         },
     },
-};
+});
 
 export default dataHistory;

@@ -1,21 +1,22 @@
+// src/data/index.js
 import dataHistory from "./dataHistory";
 import dataPedagogy from "./dataPedagogy";
 
 /**
- * Liste de tous les data disponibles
+ * Liste de tous les jeux de cartes disponibles
  */
 const allData = [dataHistory, dataPedagogy];
 
 /**
- * Récupère tous les data disponibles
- * @returns {Array} Liste des data
+ * Récupère tous les jeux de cartes disponibles
+ * @returns {Array} Liste des jeux
  */
 export const getAllData = () => allData;
 
 /**
- * Récupère un data par son ID
- * @param {string} id - ID du data
- * @returns {Object|null} Data correspondant ou null
+ * Récupère un jeu de cartes par son ID
+ * @param {string} id - ID du jeu
+ * @returns {Object|null} Jeu correspondant ou null
  */
 export const getDataById = (id) => {
     return allData.find((data) => data.id === id) || null;
