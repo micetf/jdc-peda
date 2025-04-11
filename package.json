@@ -10,7 +10,6 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "emoji-mart": "^5.5.2",
         "html2canvas": "^1.4.1",
         "jspdf": "^3.0.1",
         "prop-types": "^15.8.1",

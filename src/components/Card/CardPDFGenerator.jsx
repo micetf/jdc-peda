@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { useData } from "../Data/DataContext";
 import Button from "../UI/Button";
 import jsPDF from "jspdf";
+import { drawEmoji } from "../../utils/emojiDrawing";
 
 /**
  * Composant pour générer un PDF de cartes pédagogiques
@@ -21,6 +22,7 @@ const CardPDFGenerator = ({ filter }) => {
     const MARGIN = 15; // Marge intérieure
     const CARDS_PER_ROW = 3; // 3 colonnes
     const CARDS_PER_PAGE = 9; // 9 cartes par page
+    const EMOJI_SIZE = 48; // Taille de l'emoji en pixels
 
     // Fonction pour obtenir le nom de la propriété formaté
     const formatPropertyName = (propertyName) => {
@@ -89,40 +91,17 @@ const CardPDFGenerator = ({ filter }) => {
         return defaultEmojis[type] || "page_facing_up";
     };
 
-    // Fonction pour convertir un nom d'emoji en une représentation textuelle pour le PDF
-    const getEmojiText = (emojiName) => {
-        // Mapping des noms d'émojis vers une représentation textuelle
-        const emojiTextMap = {
-            wave: "[Salut]",
-            door: "[Porte]",
-            rocket: "[Fusée]",
-            hammer_and_wrench: "[Outils]",
-            bulb: "[Ampoule]",
-            books: "[Livres]",
-            dart: "[Cible]",
-            warning: "[Attention]",
-            white_check_mark: "[Validé]",
-            clipboard: "[Presse-papiers]",
-            page_facing_up: "[Document]",
-        };
-
-        return emojiTextMap[emojiName] || "[Icône]";
-    };
-
     // Fonction pour dessiner une carte
     const drawCard = (pdf, title, content, emojiName, color, x, y) => {
         // Convertir la couleur hex en RGB
         const rgbColor = hexToRgb(color);
-
-        // Obtenir la représentation textuelle de l'emoji pour le PDF
-        const emojiText = getEmojiText(emojiName);
 
         // Fond de la carte
         pdf.setFillColor(rgbColor[0], rgbColor[1], rgbColor[2]);
         pdf.roundedRect(x, y, CARD_WIDTH, CARD_HEIGHT, 8, 8, "F");
 
         // Contour de la carte
-        pdf.setDrawColor(0, 0, 0);
+        pdf.setDrawColor(0);
         pdf.roundedRect(x, y, CARD_WIDTH, CARD_HEIGHT, 8, 8, "S");
 
         // Titre de la carte (au-dessus de l'emoji)
@@ -135,16 +114,27 @@ const CardPDFGenerator = ({ filter }) => {
             maxWidth: CARD_WIDTH - MARGIN * 2,
         });
 
-        // Emoji (représentation textuelle) au centre
-        const emojiY = y + CARD_HEIGHT / 2;
-        pdf.setFontSize(20);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(emojiText, x + CARD_WIDTH / 2, emojiY, {
-            align: "center",
-        });
+        // Dessiner l'emoji au centre
+        try {
+            const emojiX = x + (CARD_WIDTH - EMOJI_SIZE) / 2;
+            const emojiY = y + CARD_HEIGHT / 2 - EMOJI_SIZE / 2;
+            drawEmoji(pdf, emojiName, emojiX, emojiY, EMOJI_SIZE);
+        } catch (error) {
+            console.error(
+                `Erreur lors du dessin de l'emoji ${emojiName}:`,
+                error
+            );
+            // Fallback en cas d'erreur
+            const emojiY = y + CARD_HEIGHT / 2;
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(`[Emoji: ${emojiName}]`, x + CARD_WIDTH / 2, emojiY, {
+                align: "center",
+            });
+        }
 
         // Contenu de la carte (en-dessous de l'emoji)
-        const contentY = y + (CARD_HEIGHT * 3) / 4 - 10;
+        const contentY = y + (CARD_HEIGHT * 3) / 4 + 20;
         pdf.setFontSize(10);
         pdf.setFont("helvetica", "normal");
         pdf.text(content, x + CARD_WIDTH / 2, contentY, {
