@@ -9,9 +9,9 @@ import PropTypes from "prop-types";
  * @param {string} props.title - Titre de la carte
  * @param {string} props.content - Contenu de la carte
  * @param {string} props.color - Couleur de la carte (hex)
+ * @param {string|null} props.image - Chemin vers l'image prioritaire de la carte (ou null)
  * @param {Object} props.style - Styles additionnels
- * @param {Object} props.data - Data contenant les informations du jeu
- * @param {string} props.propertyName - Nom de la propriété (pour les cartes valeur)
+ * @param {Object} props.data - Instance DataJeu (utilisé pour getFamilyDescription)
  * @returns {JSX.Element} Carte pédagogique
  */
 const Card = ({
@@ -19,62 +19,29 @@ const Card = ({
     title,
     content,
     color = "#FFFFFF",
+    image, // Nouvelle prop pour le chemin de l'image
     style,
-    data,
-    propertyName,
+    data, // Conservé pour getFamilyDescription
+    // propertyName, // Supprimé
 }) => {
     const [imageError, setImageError] = useState(false);
-
+    console.log(image);
     const getTypeStyle = () => {
         switch (type) {
             case "famille":
-                return "border-l-4 border-primary";
+                return "border-l-4 border-primary"; // Assurez-vous que 'border-primary' est défini dans Tailwind
             case "valeur":
-                return "border-l-4 border-info";
+                return "border-l-4 border-info"; // Assurez-vous que 'border-info' est défini dans Tailwind
             default:
                 return "";
         }
     };
 
     /**
-     * Obtient le chemin de l'image en fonction du type de carte
-     */
-    const getImagePath = () => {
-        if (!data || !data.metadata || !data.metadata.images) return null;
-
-        try {
-            // Pour les cartes de type famille
-            if (type === "famille" && data.metadata.images.families) {
-                const imageName = data.metadata.images.families[title];
-                if (imageName) {
-                    return `/src/assets/illustrations/${imageName}`;
-                }
-            }
-            // Pour les cartes de type valeur
-            else if (
-                type === "valeur" &&
-                propertyName &&
-                data.metadata.images.properties
-            ) {
-                const imageName = data.metadata.images.properties[propertyName];
-                if (imageName) {
-                    return `/src/assets/illustrations/${imageName}`;
-                }
-            }
-        } catch (error) {
-            console.error(
-                "Erreur lors de la récupération du chemin de l'image:",
-                error
-            );
-        }
-
-        return null;
-    };
-
-    /**
-     * Obtient la description de la famille (pour les cartes famille)
+     * Obtient la description de la famille (pour les cartes famille) - Conservé
      */
     const getFamilyDescription = () => {
+        // Vérifie si 'data' existe avant d'essayer d'y accéder
         if (type === "famille" && data?.metadata?.chronologie?.[title]) {
             return data.metadata.chronologie[title].description;
         }
@@ -82,72 +49,58 @@ const Card = ({
     };
 
     /**
-     * Formatte le contenu de la carte valeur en supprimant les parenthèses avec le nom de la famille
+     * Formatte le contenu de la carte valeur - Conservé
      */
     const formatValueContent = () => {
         if (type === "valeur") {
-            // Supprimer la partie entre parenthèses (nom de la famille)
             return content.replace(/\s*\([^)]*\)/, "");
         }
         return content;
     };
 
-    // Obtenir le chemin de l'image
-    const imagePath = getImagePath();
-    // Obtenir la description de la famille si disponible
     const familyDescription = getFamilyDescription();
-    // Formater le contenu pour les cartes valeur
     const formattedContent = formatValueContent();
-
-    // Combiner les styles
     const cardStyle = {
         ...(style || {}),
         backgroundColor: color,
+    };
+
+    // Fonction pour rendre l'image si elle existe et n'a pas généré d'erreur
+    const renderImage = () => {
+        // Vérifier si la prop 'image' contient un chemin valide et si une erreur n'est pas survenue
+        if (image && !imageError) {
+            return (
+                <img
+                    // Utilise directement la prop 'image'. Assurez-vous que le chemin est correct
+                    // (ex: relatif au dossier public)
+                    src={image}
+                    alt={`Illustration pour ${title}`} // Alt text descriptif
+                    className="w-full h-32 object-cover mb-2 rounded-t-md" // Ajustez les classes Tailwind si besoin
+                    // Gestion de l'erreur si l'image ne peut être chargée
+                    onError={() => setImageError(true)}
+                />
+            );
+        }
+        // Ne rien rendre si pas d'image ou si erreur de chargement
+        return null;
     };
 
     // Rendu pour les cartes de type "famille"
     if (type === "famille") {
         return (
             <div
-                className={`card ${getTypeStyle()} h-full overflow-hidden flex flex-col`}
+                className={`bg-white rounded-md shadow-md overflow-hidden ${getTypeStyle()}`}
                 style={cardStyle}
             >
-                {/* Titre de la carte - 1/3 de l'espace */}
-                <div className="pt-4 pb-2 px-4">
-                    <h3 className="text-xl font-bold text-center">{title}</h3>
-                </div>
-
-                {/* Image centrée - 1/3 de l'espace */}
-                <div className="flex-1 flex items-center justify-center p-2">
-                    {imagePath && !imageError ? (
-                        <img
-                            src={imagePath}
-                            alt={`Illustration pour ${title}`}
-                            className="max-h-32 max-w-full object-contain transition-opacity duration-200"
-                            onError={() => {
-                                console.warn(
-                                    `Erreur de chargement de l'image: ${imagePath}`
-                                );
-                                setImageError(true);
-                            }}
-                            onLoad={() => setImageError(false)}
-                        />
-                    ) : (
-                        <div className="text-center p-4 text-gray-500 italic">
-                            {title}
-                        </div>
-                    )}
-                </div>
-
-                {/* Description - 1/3 de l'espace */}
-                <div className="p-4 mt-auto border-t border-gray-200">
+                {renderImage()} {/* Affiche l'image si disponible */}
+                <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-1">{title}</h3>
                     {familyDescription ? (
-                        <p className="text-sm">{familyDescription}</p>
-                    ) : (
-                        <p className="text-sm italic text-gray-500">
-                            Pas de description disponible
+                        <p className="text-xs text-gray-500 italic mb-2">
+                            ({familyDescription})
                         </p>
-                    )}
+                    ) : null}
+                    <p className="text-sm text-gray-700">{formattedContent}</p>
                 </div>
             </div>
         );
@@ -156,60 +109,27 @@ const Card = ({
     // Rendu pour les cartes de type "valeur"
     return (
         <div
-            className={`card ${getTypeStyle()} h-full overflow-hidden flex flex-col`}
+            className={`bg-white rounded-md shadow-md overflow-hidden ${getTypeStyle()}`}
             style={cardStyle}
         >
-            {/* En-tête de la carte avec titre */}
-            <div className="card-header">
-                <h3 className="text-lg font-bold truncate">{title}</h3>
-            </div>
-
-            {/* Image de la carte centrée */}
-            <div className="flex-grow flex items-center justify-center py-2">
-                {imagePath && !imageError ? (
-                    <img
-                        src={imagePath}
-                        alt={`Illustration pour ${title}`}
-                        className="max-h-32 max-w-full object-contain transition-opacity duration-200"
-                        onError={() => {
-                            console.warn(
-                                `Erreur de chargement de l'image: ${imagePath}`
-                            );
-                            setImageError(true);
-                        }}
-                        onLoad={() => setImageError(false)}
-                    />
-                ) : (
-                    <div className="text-center p-4 text-gray-500 italic">
-                        {title}
-                    </div>
-                )}
-            </div>
-
-            {/* Contenu de la carte */}
-            <div className="card-body mt-auto">
-                <p className="text-sm">{formattedContent}</p>
+            {renderImage()} {/* Affiche l'image si disponible */}
+            <div className="p-4">
+                <h3 className="text-lg font-semibold mb-1">{title}</h3>
+                <p className="text-sm text-gray-600">{formattedContent}</p>
             </div>
         </div>
     );
 };
 
+// Mise à jour des PropTypes
 Card.propTypes = {
     type: PropTypes.oneOf(["famille", "valeur"]).isRequired,
     title: PropTypes.string.isRequired,
-    content: PropTypes.string,
+    content: PropTypes.string.isRequired,
     color: PropTypes.string,
+    image: PropTypes.string, // Ajout de la prop image (string ou null/undefined)
     style: PropTypes.object,
-    data: PropTypes.object,
-    propertyName: PropTypes.string,
-};
-
-Card.defaultProps = {
-    content: "",
-    color: "#FFFFFF",
-    style: null,
-    data: null,
-    propertyName: "",
+    data: PropTypes.object, // Conservé pour getFamilyDescription, le rendre optionnel si possible
 };
 
 export default Card;

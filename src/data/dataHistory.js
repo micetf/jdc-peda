@@ -227,6 +227,14 @@ const dataHistory = new DataJeu({
                     "history/properties/inventions.jpg",
                 "Vie quotidienne": "history/properties/vie-quotidienne.jpg",
             },
+            values: {
+                Préhistoire: {
+                    "Habitat et architecture": {
+                        "Grottes ornées":
+                            "history/values/prehistoire/habitat/grottes.jpg",
+                    },
+                },
+            },
         },
 
         // Informations chronologiques pour chaque famille

@@ -13,7 +13,7 @@ class DataJeu {
      * @param {string[]} options.familles - Liste des familles du jeu
      * @param {string[]} options.proprietes - Liste des propriétés communes à toutes les familles
      * @param {Object} options.valeurs - Dictionnaire des valeurs par famille et propriété
-     * @param {Object} options.metadata - Métadonnées du jeu
+     * @param {Object} options.metadata - Métadonnées du jeu (niveau, objectifs, regles, colors, images, chronologie, contextes)
      */
     constructor(options) {
         // Validation des propriétés obligatoires
@@ -48,7 +48,22 @@ class DataJeu {
             objectifs: options.metadata.objectifs || [],
             regles: options.metadata.regles || [],
             colors: options.metadata.colors || {},
-            images: options.metadata.images || { families: {}, properties: {} },
+            // Modification ici : Initialisation de la structure complète pour les images
+            images: {
+                families:
+                    (options.metadata.images &&
+                        options.metadata.images.families) ||
+                    {},
+                properties:
+                    (options.metadata.images &&
+                        options.metadata.images.properties) ||
+                    {},
+                // Ajout de la structure pour les images spécifiques aux valeurs
+                values:
+                    (options.metadata.images &&
+                        options.metadata.images.values) ||
+                    {},
+            },
             chronologie: options.metadata.chronologie || {},
             contextes: options.metadata.contextes || {},
         };
@@ -93,14 +108,16 @@ class DataJeu {
      */
     getValeurs(famille, propriete) {
         if (!this.familles.includes(famille)) {
-            throw new Error(`Famille "${famille}" non trouvée`);
+            console.error(`Famille "${famille}" non trouvée dans le jeu.`);
+            return []; // Retourne un tableau vide au lieu de lancer une erreur pour la flexibilité
         }
 
         if (!this.proprietes.includes(propriete)) {
-            throw new Error(`Propriété "${propriete}" non trouvée`);
+            console.error(`Propriété "${propriete}" non trouvée dans le jeu.`);
+            return []; // Retourne un tableau vide
         }
 
-        return this.valeurs[famille][propriete] || [];
+        return this.valeurs[famille]?.[propriete] || []; // Utilise optional chaining pour plus de sécurité
     }
 
     /**
@@ -122,103 +139,144 @@ class DataJeu {
     }
 
     /**
-     * Obtient le chemin de l'image d'une famille
+     * Obtient le chemin de l'image prioritaire pour une carte donnée (valeur, propriété, ou famille).
+     * La priorité est : Valeur spécifique > Propriété > null.
      * @param {string} famille - Nom de la famille
+     * @param {string|null} propriete - Nom de la propriété (null si type 'famille')
+     * @param {string|null} valeur - Nom de la valeur (null si type 'famille' ou si l'on cherche l'image de la propriété)
      * @returns {string|null} Chemin de l'image ou null si non disponible
      */
+    getImagePourCarte(famille, propriete, valeur) {
+        const imagesMeta = this.metadata.images || {};
+        const valuesImages = imagesMeta.values || {};
+        const propertiesImages = imagesMeta.properties || {};
+
+        if (
+            valeur &&
+            famille &&
+            propriete &&
+            valuesImages[famille] &&
+            valuesImages[famille][propriete] &&
+            valuesImages[famille][propriete][valeur]
+        ) {
+            return valuesImages[famille][propriete][valeur];
+        }
+
+        // 2. Vérifier l'image de la propriété (priorité moyenne)
+        if (propriete && propertiesImages[propriete]) {
+            return propertiesImages[propriete];
+        }
+
+        // 3. Aucune image spécifique trouvée pour valeur ou propriété
+        return null;
+    }
+
+    /**
+     * Obtient le chemin de l'image d'une famille (pour la carte famille).
+     * @param {string} famille - Nom de la famille
+     * @returns {string|null} Chemin de l'image ou null si non disponible
+     * @deprecated Utiliser `this.metadata.images.families[famille]` directement si besoin ou ajuster la logique de carte famille.
+     */
     getImageFamille(famille) {
+        console.warn("getImageFamille est dépréciée.");
         return this.metadata.images.families[famille] || null;
     }
 
     /**
-     * Obtient le chemin de l'image d'une propriété
-     * @param {string} propriete - Nom de la propriété
-     * @returns {string|null} Chemin de l'image ou null si non disponible
-     */
-    getImagePropriete(propriete) {
-        return this.metadata.images.properties[propriete] || null;
-    }
-
-    /**
-     * Obtient la couleur d'une famille ou d'une propriété
-     * @param {string} type - Type (famille ou propriété)
-     * @param {string} nom - Nom de la famille ou de la propriété
+     * Obtient la couleur d'une carte (famille ou valeur).
+     * @param {string} type - Type ('famille' ou 'valeur')
+     * @param {string} nom - Nom de la famille (si type='famille') ou de la propriété (si type='valeur')
      * @returns {string} Couleur au format hexadécimal
      */
     getColor(type, nom) {
         // Couleurs par défaut
         const defaultColors = {
-            famille: "#FFFDE7", // Jaune très clair
-            propriete: "#E3F2FD", // Bleu très clair
-            valeur: "#F3E5F5", // Violet très clair
+            famille: "#FFFDE7", // Jaune très clair par défaut pour les familles
+            valeur: "#E3F2FD", // Bleu très clair par défaut pour les valeurs (basé sur propriété)
         };
 
+        // Couleur spécifique au nom (famille ou propriété) a la priorité
         if (this.metadata.colors[nom]) {
             return this.metadata.colors[nom];
         }
 
+        // Couleur spécifique au type (famille ou valeur) si pas de couleur spécifique au nom
         if (this.metadata.colors[type]) {
             return this.metadata.colors[type];
         }
 
-        return defaultColors[type] || "#FFFFFF";
+        // Couleur par défaut pour le type
+        return defaultColors[type] || "#FFFFFF"; // Fallback blanc
     }
 
     /**
-     * Obtient les familles triées par ordre chronologique
+     * Obtient les familles triées par ordre chronologique si disponible, sinon par ordre d'origine.
      * @returns {string[]} Liste des familles triées
      */
     getFamillesTriees() {
-        // Trier les familles selon la chronologie si elle existe
-        if (Object.keys(this.metadata.chronologie).length > 0) {
-            return [...this.familles].sort((a, b) => {
-                const chronoA = this.metadata.chronologie[a];
-                const chronoB = this.metadata.chronologie[b];
-
-                // Si les deux familles ont une chronologie, comparer les valeurs
-                if (chronoA && chronoB) {
-                    // Si la chronologie contient un champ ordre, l'utiliser
-                    if (
-                        typeof chronoA.ordre === "number" &&
-                        typeof chronoB.ordre === "number"
-                    ) {
-                        return chronoA.ordre - chronoB.ordre;
-                    }
-
-                    // Sinon, comparer les dates de début
-                    const debutA =
-                        typeof chronoA.debut === "string" ? chronoA.debut : "";
-                    const debutB =
-                        typeof chronoB.debut === "string" ? chronoB.debut : "";
-                    return debutA.localeCompare(debutB);
-                }
-
-                // Si une seule famille a une chronologie, la mettre en premier
-                if (chronoA) return -1;
-                if (chronoB) return 1;
-
-                // Sinon, garder l'ordre d'origine
-                return this.familles.indexOf(a) - this.familles.indexOf(b);
-            });
+        if (Object.keys(this.metadata.chronologie).length === 0) {
+            return [...this.familles]; // Retourne l'ordre d'origine si pas de chrono
         }
 
-        // Si pas de chronologie, retourner l'ordre d'origine
-        return [...this.familles];
+        return [...this.familles].sort((a, b) => {
+            const chronoA = this.metadata.chronologie[a];
+            const chronoB = this.metadata.chronologie[b];
+
+            // Priorité 1 : Champ 'ordre' numérique
+            if (
+                chronoA &&
+                typeof chronoA.ordre === "number" &&
+                chronoB &&
+                typeof chronoB.ordre === "number"
+            ) {
+                return chronoA.ordre - chronoB.ordre;
+            }
+            if (chronoA && typeof chronoA.ordre === "number") return -1; // A a un ordre, B non
+            if (chronoB && typeof chronoB.ordre === "number") return 1; // B a un ordre, A non
+
+            // Priorité 2 : Champ 'debut' (chaîne ou nombre)
+            if (
+                chronoA &&
+                chronoA.debut !== undefined &&
+                chronoB &&
+                chronoB.debut !== undefined
+            ) {
+                // Gestion simple pour année numérique ou chaîne 'YYYY' ou '-YYYY' (av. J.-C.)
+                const debutA = parseInt(String(chronoA.debut).trim(), 10);
+                const debutB = parseInt(String(chronoB.debut).trim(), 10);
+                if (!isNaN(debutA) && !isNaN(debutB)) {
+                    return debutA - debutB;
+                }
+                // Fallback pour comparaison de chaînes si non numérique
+                return String(chronoA.debut).localeCompare(
+                    String(chronoB.debut)
+                );
+            }
+            if (chronoA && chronoA.debut !== undefined) return -1; // A a un début, B non
+            if (chronoB && chronoB.debut !== undefined) return 1; // B a un début, A non
+
+            // Fallback : Ordre d'origine si aucune info de tri exploitable
+            return this.familles.indexOf(a) - this.familles.indexOf(b);
+        });
     }
 
     /**
      * Obtient toutes les cartes du jeu selon le filtre spécifié
-     * @param {string} filter - Filtre à appliquer (tout, famille, valeur)
-     * @returns {Object[]} Liste des cartes
+     * @param {string} filter - Filtre à appliquer ('tout', 'famille', 'valeur')
+     * @returns {Object[]} Liste des cartes avec leur image prioritaire
      */
     getCards(filter = "tout") {
         const cards = [];
-
+        const famillesTriees = this.getFamillesTriees(); // Utiliser les familles triées
+        const root = "src/assets/illustrations/";
         // Cartes de familles
         if (filter === "tout" || filter === "famille") {
-            this.familles.forEach((famille) => {
+            famillesTriees.forEach((famille) => {
                 const color = this.getColor("famille", famille);
                 const content = this.getContexte(famille) || famille;
+                // Pour une carte famille, on prend l'image définie pour la famille
+                const image =
+                    root + this.metadata.images.families[famille] || null;
 
                 cards.push({
                     id: `famille-${famille}`,
@@ -226,6 +284,7 @@ class DataJeu {
                     title: famille,
                     content,
                     color,
+                    image, // Image de la famille ajoutée
                     familyName: famille,
                 });
             });
@@ -233,18 +292,23 @@ class DataJeu {
 
         // Cartes de valeurs
         if (filter === "tout" || filter === "valeur") {
-            this.familles.forEach((famille) => {
+            famillesTriees.forEach((famille) => {
                 this.proprietes.forEach((propriete) => {
                     const valeurs = this.getValeurs(famille, propriete);
-                    const color = this.getColor("valeur", propriete);
+                    const color = this.getColor("valeur", propriete); // Couleur basée sur la propriété pour les cartes valeur
 
                     valeurs.forEach((valeur) => {
+                        // Utilisation de la nouvelle méthode pour obtenir l'image prioritaire
+                        const image =
+                            root +
+                            this.getImagePourCarte(famille, propriete, valeur);
                         cards.push({
                             id: `valeur-${famille}-${propriete}-${valeur}`,
                             type: "valeur",
                             title: valeur,
-                            content: `Valeur de "${propriete}" pour la famille "${famille}"`,
+                            content: `Valeur de "${propriete}" pour la famille "${famille}"`, // Contenu générique
                             color,
+                            image, // Image prioritaire ajoutée
                             familyName: famille,
                             propertyName: propriete,
                         });
@@ -257,7 +321,7 @@ class DataJeu {
     }
 
     /**
-     * Sérialise le jeu en objet JSON
+     * Sérialise le jeu en objet JSON standard
      * @returns {Object} Objet JSON représentant le jeu
      */
     toJSON() {
