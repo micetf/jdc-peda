@@ -21,26 +21,6 @@ const CardPDFGenerator = ({ filter }) => {
     const MARGIN = 15; // Marge intérieure
     const CARDS_PER_ROW = 3; // 3 colonnes
     const CARDS_PER_PAGE = 9; // 9 cartes par page
-    const EMOJI_SIZE = 40; // Taille d'emoji
-
-    // Mapping des noms d'émojis vers caractères Unicode
-    const emojiMap = {
-        wave: "👋",
-        door: "🚪",
-        rocket: "🚀",
-        hammer_and_wrench: "🔧",
-        bulb: "💡",
-        books: "📚",
-        dart: "🎯",
-        warning: "⛔",
-        white_check_mark: "✅",
-        clipboard: "📋",
-    };
-
-    // Fonction pour obtenir l'emoji à partir de son nom
-    const getEmojiFromName = (emojiName) => {
-        return emojiMap[emojiName] || "📄"; // Emoji par défaut si non trouvé
-    };
 
     // Fonction pour obtenir le nom de la propriété formaté
     const formatPropertyName = (propertyName) => {
@@ -95,24 +75,47 @@ const CardPDFGenerator = ({ filter }) => {
         // Si le corpus a des emojis spécifiques, les utiliser
         if (selectedData.metadata && selectedData.metadata.emojis) {
             if (selectedData.metadata.emojis[name]) {
-                return getEmojiFromName(selectedData.metadata.emojis[name]);
+                return selectedData.metadata.emojis[name];
             }
         }
 
         // Emojis par défaut selon le type
         const defaultEmojis = {
-            famille: "📚",
-            propriete: "🔍",
-            valeur: "✨",
+            famille: "books",
+            propriete: "bulb",
+            valeur: "clipboard",
         };
 
-        return defaultEmojis[type] || "📄";
+        return defaultEmojis[type] || "page_facing_up";
+    };
+
+    // Fonction pour convertir un nom d'emoji en une représentation textuelle pour le PDF
+    const getEmojiText = (emojiName) => {
+        // Mapping des noms d'émojis vers une représentation textuelle
+        const emojiTextMap = {
+            wave: "[Salut]",
+            door: "[Porte]",
+            rocket: "[Fusée]",
+            hammer_and_wrench: "[Outils]",
+            bulb: "[Ampoule]",
+            books: "[Livres]",
+            dart: "[Cible]",
+            warning: "[Attention]",
+            white_check_mark: "[Validé]",
+            clipboard: "[Presse-papiers]",
+            page_facing_up: "[Document]",
+        };
+
+        return emojiTextMap[emojiName] || "[Icône]";
     };
 
     // Fonction pour dessiner une carte
-    const drawCard = (pdf, title, content, emoji, color, x, y) => {
+    const drawCard = (pdf, title, content, emojiName, color, x, y) => {
         // Convertir la couleur hex en RGB
         const rgbColor = hexToRgb(color);
+
+        // Obtenir la représentation textuelle de l'emoji pour le PDF
+        const emojiText = getEmojiText(emojiName);
 
         // Fond de la carte
         pdf.setFillColor(rgbColor[0], rgbColor[1], rgbColor[2]);
@@ -132,10 +135,11 @@ const CardPDFGenerator = ({ filter }) => {
             maxWidth: CARD_WIDTH - MARGIN * 2,
         });
 
-        // Emoji au centre
+        // Emoji (représentation textuelle) au centre
         const emojiY = y + CARD_HEIGHT / 2;
-        pdf.setFontSize(40);
-        pdf.text(emoji, x + CARD_WIDTH / 2, emojiY, {
+        pdf.setFontSize(20);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(emojiText, x + CARD_WIDTH / 2, emojiY, {
             align: "center",
         });
 
@@ -155,27 +159,18 @@ const CardPDFGenerator = ({ filter }) => {
         setIsGenerating(true);
 
         try {
+            // Initialiser le PDF
             const pdf = new jsPDF("p", "pt", "a4");
-            let cardIndex = 0;
+            let pageCounter = 1;
 
             // Générer les cartes selon le filtre
-            const cards = [];
+            const cartesFamille = [];
+            const cartesValeur = [];
 
             // Logique pour générer les cartes selon le filtre
             if (filter === "tout" || filter === "famille") {
-                // Ajouter une page pour les cartes "Famille"
-                pdf.addPage();
-                pdf.setFontSize(18);
-                pdf.setFont("helvetica", "bold");
-                pdf.text(
-                    `Cartes "Famille"`,
-                    pdf.internal.pageSize.width / 2,
-                    30,
-                    { align: "center" }
-                );
-
                 selectedData.familles.forEach((famille) => {
-                    cards.push({
+                    cartesFamille.push({
                         type: "famille",
                         title: famille,
                         content: `${famille}`,
@@ -185,27 +180,14 @@ const CardPDFGenerator = ({ filter }) => {
                 });
             }
 
-            // Nous ne générons plus de cartes de propriété
-
             if (filter === "tout" || filter === "valeur") {
-                // Ajouter une page pour les cartes "Valeur"
-                pdf.addPage();
-                pdf.setFontSize(18);
-                pdf.setFont("helvetica", "bold");
-                pdf.text(
-                    `Cartes "Valeur"`,
-                    pdf.internal.pageSize.width / 2,
-                    30,
-                    { align: "center" }
-                );
-
                 // Pour chaque famille et propriété, créer les cartes de valeurs
                 selectedData.familles.forEach((famille) => {
                     selectedData.proprietes.forEach((propriete) => {
                         const valeurs =
                             selectedData.valeurs[famille][propriete];
                         valeurs.forEach((valeur) => {
-                            cards.push({
+                            cartesValeur.push({
                                 type: "valeur",
                                 title: formatPropertyName(propriete),
                                 content: valeur,
@@ -217,36 +199,118 @@ const CardPDFGenerator = ({ filter }) => {
                 });
             }
 
-            // Dessiner les cartes
-            cardIndex = 0;
-            let currentPage = 1;
+            // Page de titre
+            pdf.setFontSize(24);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(
+                "Jeu de Cartes Pédagogiques",
+                pdf.internal.pageSize.width / 2,
+                50,
+                { align: "center" }
+            );
 
-            for (const card of cards) {
-                const pageIndex = Math.floor(cardIndex / CARDS_PER_PAGE);
+            pdf.setFontSize(18);
+            pdf.text(selectedData.titre, pdf.internal.pageSize.width / 2, 90, {
+                align: "center",
+            });
 
-                if (pageIndex + 1 > currentPage) {
-                    pdf.addPage();
-                    currentPage++;
-                }
+            pdf.setFontSize(12);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(
+                selectedData.description,
+                pdf.internal.pageSize.width / 2,
+                130,
+                { align: "center", maxWidth: 400 }
+            );
 
-                const posIndex = cardIndex % CARDS_PER_PAGE;
-                const row = Math.floor(posIndex / CARDS_PER_ROW);
-                const col = posIndex % CARDS_PER_ROW;
+            // Dessiner les cartes "Famille" si nécessaire
+            if (cartesFamille.length > 0) {
+                pdf.addPage();
+                pageCounter++;
 
-                const x = 40 + col * (CARD_WIDTH + 10);
-                const y = 50 + row * (CARD_HEIGHT + 10);
-
-                drawCard(
-                    pdf,
-                    card.title,
-                    card.content,
-                    card.emoji,
-                    card.color,
-                    x,
-                    y
+                pdf.setFontSize(18);
+                pdf.setFont("helvetica", "bold");
+                pdf.text(
+                    `Cartes "Famille"`,
+                    pdf.internal.pageSize.width / 2,
+                    30,
+                    { align: "center" }
                 );
 
-                cardIndex++;
+                // Dessiner les cartes famille
+                let carteIndex = 0;
+                for (const carte of cartesFamille) {
+                    const posIndex = carteIndex % CARDS_PER_PAGE;
+
+                    // Si on a rempli une page, on en ajoute une nouvelle
+                    if (posIndex === 0 && carteIndex > 0) {
+                        pdf.addPage();
+                        pageCounter++;
+                    }
+
+                    const row = Math.floor(posIndex / CARDS_PER_ROW);
+                    const col = posIndex % CARDS_PER_ROW;
+
+                    const x = 40 + col * (CARD_WIDTH + 10);
+                    const y = 50 + row * (CARD_HEIGHT + 10);
+
+                    drawCard(
+                        pdf,
+                        carte.title,
+                        carte.content,
+                        carte.emoji,
+                        carte.color,
+                        x,
+                        y
+                    );
+
+                    carteIndex++;
+                }
+            }
+
+            // Dessiner les cartes "Valeur" si nécessaire
+            if (cartesValeur.length > 0) {
+                pdf.addPage();
+                pageCounter++;
+
+                pdf.setFontSize(18);
+                pdf.setFont("helvetica", "bold");
+                pdf.text(
+                    `Cartes "Valeur"`,
+                    pdf.internal.pageSize.width / 2,
+                    30,
+                    { align: "center" }
+                );
+
+                // Dessiner les cartes valeur
+                let carteIndex = 0;
+                for (const carte of cartesValeur) {
+                    const posIndex = carteIndex % CARDS_PER_PAGE;
+
+                    // Si on a rempli une page, on en ajoute une nouvelle
+                    if (posIndex === 0 && carteIndex > 0) {
+                        pdf.addPage();
+                        pageCounter++;
+                    }
+
+                    const row = Math.floor(posIndex / CARDS_PER_ROW);
+                    const col = posIndex % CARDS_PER_ROW;
+
+                    const x = 40 + col * (CARD_WIDTH + 10);
+                    const y = 50 + row * (CARD_HEIGHT + 10);
+
+                    drawCard(
+                        pdf,
+                        carte.title,
+                        carte.content,
+                        carte.emoji,
+                        carte.color,
+                        x,
+                        y
+                    );
+
+                    carteIndex++;
+                }
             }
 
             // Ajouter une page de règles du jeu

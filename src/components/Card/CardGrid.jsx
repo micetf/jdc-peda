@@ -32,34 +32,20 @@ const CardGrid = ({ data, filter }) => {
 
     // Fonction pour obtenir l'emoji d'une carte
     const getCardEmoji = (type, name) => {
-        // Mapping des noms d'émojis vers caractères Unicode
-        const emojiMap = {
-            wave: "👋",
-            door: "🚪",
-            rocket: "🚀",
-            hammer_and_wrench: "🔧",
-            bulb: "💡",
-            books: "📚",
-            dart: "🎯",
-            warning: "⛔",
-            white_check_mark: "✅",
-            clipboard: "📋",
-        };
-
         // Si le corpus a des emojis spécifiques, les utiliser
         if (data.metadata && data.metadata.emojis) {
             if (data.metadata.emojis[name]) {
-                return emojiMap[data.metadata.emojis[name]] || "📄";
+                return data.metadata.emojis[name];
             }
         }
 
         // Emojis par défaut selon le type
         const defaultEmojis = {
-            famille: "📚",
-            valeur: "✨",
+            famille: "books",
+            valeur: "clipboard",
         };
 
-        return defaultEmojis[type] || "📄";
+        return defaultEmojis[type] || "page_facing_up";
     };
 
     const cards = useMemo(() => {
@@ -69,7 +55,6 @@ const CardGrid = ({ data, filter }) => {
         if (filter === "tout" || filter === "famille") {
             data.familles.forEach((famille) => {
                 const colorHex = getCardColor("famille", famille);
-                const colorClass = `bg-[${colorHex}]`;
 
                 result.push({
                     id: `famille-${famille}`,

@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import EmojiDisplay from "../UI/EmojiDisplay";
 
 /**
  * Composant de carte pédagogique
@@ -8,7 +9,7 @@ import PropTypes from "prop-types";
  * @param {string} props.title - Titre de la carte
  * @param {string} props.content - Contenu de la carte
  * @param {string} props.color - Couleur de la carte (hex)
- * @param {string} props.icon - Icône de la carte (emoji)
+ * @param {string} props.icon - Icône de la carte (nom de l'emoji)
  * @param {Object} props.style - Styles additionnels
  * @returns {JSX.Element} Carte pédagogique
  */
@@ -33,7 +34,7 @@ const Card = ({ type, title, content, color = "#FFFFFF", icon, style }) => {
         <div className={`card ${getTypeStyle()} h-full`} style={cardStyle}>
             <div className="card-header flex items-center justify-between">
                 <h3 className="text-lg font-bold">{title}</h3>
-                {icon && <span className="text-2xl">{icon}</span>}
+                {icon && <EmojiDisplay name={icon} size={28} />}
             </div>
             <div className="card-body">
                 <p>{content}</p>
