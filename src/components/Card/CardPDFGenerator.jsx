@@ -1,20 +1,25 @@
 // src/components/Card/CardPDFGenerator.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useData } from "../Data/DataContext";
 import Button from "../UI/Button";
 import jsPDF from "jspdf";
-import { drawEmoji } from "../../utils/emojiDrawing";
+import {
+    preloadAllIcons,
+    heroIconToDataUrl,
+} from "../../utils/pdfIconRenderer";
 
 /**
- * Composant pour générer un PDF de cartes pédagogiques
+ * Composant pour générer un PDF de cartes pédagogiques avec des illustrations Heroicons
  * @param {Object} props - Propriétés du composant
- * @param {string} props.filter - Filtre à appliquer (famille, propriété, valeur)
+ * @param {string} props.filter - Filtre à appliquer (famille, valeur, tout)
  * @returns {JSX.Element} Bouton de génération de PDF
  */
 const CardPDFGenerator = ({ filter }) => {
     const { selectedData } = useData();
     const [isGenerating, setIsGenerating] = useState(false);
+    const [iconCache, setIconCache] = useState(null);
+    const [isPreloading, setIsPreloading] = useState(true);
 
     // Configuration des cartes - 9 cartes par page (3x3)
     const CARD_WIDTH = 172; // Environ 6 cm
@@ -22,7 +27,27 @@ const CardPDFGenerator = ({ filter }) => {
     const MARGIN = 15; // Marge intérieure
     const CARDS_PER_ROW = 3; // 3 colonnes
     const CARDS_PER_PAGE = 9; // 9 cartes par page
-    const EMOJI_SIZE = 48; // Taille de l'emoji en pixels
+    const ICON_SIZE = 48; // Taille de l'icône en pixels
+
+    // Précharger les icônes au montage du composant
+    useEffect(() => {
+        const loadIcons = async () => {
+            setIsPreloading(true);
+            try {
+                const icons = await preloadAllIcons(ICON_SIZE);
+                setIconCache(icons);
+            } catch (error) {
+                console.error(
+                    "Erreur lors du préchargement des icônes:",
+                    error
+                );
+            } finally {
+                setIsPreloading(false);
+            }
+        };
+
+        loadIcons();
+    }, []);
 
     // Fonction pour obtenir le nom de la propriété formaté
     const formatPropertyName = (propertyName) => {
@@ -72,27 +97,36 @@ const CardPDFGenerator = ({ filter }) => {
         return DEFAULT_COLORS[type] || "#FFFFFF";
     };
 
-    // Fonction pour obtenir l'emoji d'une carte
-    const getCardEmoji = (type, name) => {
-        // Si le corpus a des emojis spécifiques, les utiliser
+    // Fonction pour obtenir le nom de l'icône d'une carte
+    const getCardIconName = (type, name) => {
+        // Si le corpus a des emojis/icônes spécifiques, utiliser leur nom
         if (selectedData.metadata && selectedData.metadata.emojis) {
             if (selectedData.metadata.emojis[name]) {
                 return selectedData.metadata.emojis[name];
             }
         }
 
-        // Emojis par défaut selon le type
-        const defaultEmojis = {
+        // Noms d'icônes par défaut selon le type
+        const defaultIcons = {
             famille: "books",
             propriete: "bulb",
             valeur: "clipboard",
         };
 
-        return defaultEmojis[type] || "page_facing_up";
+        return defaultIcons[type] || "page_facing_up";
     };
 
     // Fonction pour dessiner une carte
-    const drawCard = (pdf, title, content, emojiName, color, x, y) => {
+    const drawCard = async (
+        pdf,
+        title,
+        content,
+        iconName,
+        color,
+        x,
+        y,
+        type
+    ) => {
         // Convertir la couleur hex en RGB
         const rgbColor = hexToRgb(color);
 
@@ -102,10 +136,20 @@ const CardPDFGenerator = ({ filter }) => {
 
         // Contour de la carte
         pdf.setDrawColor(0);
+        pdf.setLineWidth(0.5);
         pdf.roundedRect(x, y, CARD_WIDTH, CARD_HEIGHT, 8, 8, "S");
 
-        // Titre de la carte (au-dessus de l'emoji)
-        const titleY = y + CARD_HEIGHT / 4 - 10;
+        // Barre colorée en fonction du type (pour différencier visuellement les types)
+        if (type === "famille") {
+            pdf.setFillColor(59, 130, 246); // bleu primaire
+            pdf.rect(x, y, 6, CARD_HEIGHT, "F");
+        } else if (type === "valeur") {
+            pdf.setFillColor(99, 102, 241); // indigo
+            pdf.rect(x, y, 6, CARD_HEIGHT, "F");
+        }
+
+        // Titre de la carte (au-dessus de l'icône)
+        const titleY = y + MARGIN + 10;
         pdf.setFontSize(14);
         pdf.setFont("helvetica", "bold");
         pdf.setTextColor(0, 0, 0);
@@ -114,32 +158,53 @@ const CardPDFGenerator = ({ filter }) => {
             maxWidth: CARD_WIDTH - MARGIN * 2,
         });
 
-        // Dessiner l'emoji au centre
+        // Dessiner l'icône au centre
         try {
-            const emojiX = x + (CARD_WIDTH - EMOJI_SIZE) / 2;
-            const emojiY = y + CARD_HEIGHT / 2 - EMOJI_SIZE / 2;
-            drawEmoji(pdf, emojiName, emojiX, emojiY, EMOJI_SIZE);
+            // Utiliser l'icône pré-chargée si disponible, sinon la générer à la volée
+            let iconData;
+            if (iconCache && iconCache[iconName]) {
+                iconData = iconCache[iconName];
+            } else {
+                // Utiliser l'icône par défaut selon le type si l'icône spécifique n'est pas disponible
+                const defaultIconName =
+                    type === "famille" ? "default_famille" : "default_valeur";
+                iconData =
+                    iconCache && iconCache[defaultIconName]
+                        ? iconCache[defaultIconName]
+                        : await heroIconToDataUrl(iconName, type, ICON_SIZE);
+            }
+
+            const iconX = x + (CARD_WIDTH - ICON_SIZE) / 2;
+            const iconY = y + CARD_HEIGHT / 2 - ICON_SIZE / 2;
+            pdf.addImage(iconData, "PNG", iconX, iconY, ICON_SIZE, ICON_SIZE);
         } catch (error) {
             console.error(
-                `Erreur lors du dessin de l'emoji ${emojiName}:`,
+                `Erreur lors du dessin de l'icône ${iconName}:`,
                 error
             );
             // Fallback en cas d'erreur
-            const emojiY = y + CARD_HEIGHT / 2;
+            const iconY = y + CARD_HEIGHT / 2;
             pdf.setFontSize(14);
             pdf.setFont("helvetica", "normal");
-            pdf.text(`[Emoji: ${emojiName}]`, x + CARD_WIDTH / 2, emojiY, {
+            pdf.text(`[Icône: ${iconName}]`, x + CARD_WIDTH / 2, iconY, {
                 align: "center",
             });
         }
 
-        // Contenu de la carte (en-dessous de l'emoji)
-        const contentY = y + (CARD_HEIGHT * 3) / 4 + 20;
+        // Contenu de la carte (en-dessous de l'icône)
+        const contentY = y + CARD_HEIGHT - MARGIN - 20;
         pdf.setFontSize(10);
         pdf.setFont("helvetica", "normal");
         pdf.text(content, x + CARD_WIDTH / 2, contentY, {
             align: "center",
             maxWidth: CARD_WIDTH - MARGIN * 2,
+        });
+
+        // Type de carte (en petit en bas)
+        pdf.setFontSize(8);
+        pdf.setTextColor(100, 100, 100);
+        pdf.text(`Type: ${type}`, x + CARD_WIDTH / 2, y + CARD_HEIGHT - 5, {
+            align: "center",
         });
     };
 
@@ -149,6 +214,13 @@ const CardPDFGenerator = ({ filter }) => {
         setIsGenerating(true);
 
         try {
+            // S'assurer que les icônes sont préchargées
+            let iconsReady = iconCache;
+            if (!iconsReady) {
+                iconsReady = await preloadAllIcons(ICON_SIZE);
+                setIconCache(iconsReady);
+            }
+
             // Initialiser le PDF
             const pdf = new jsPDF("p", "pt", "a4");
             let pageCounter = 1;
@@ -164,7 +236,7 @@ const CardPDFGenerator = ({ filter }) => {
                         type: "famille",
                         title: famille,
                         content: `${famille}`,
-                        emoji: getCardEmoji("famille", famille),
+                        iconName: getCardIconName("famille", famille),
                         color: getCardColor("famille", famille),
                     });
                 });
@@ -180,8 +252,8 @@ const CardPDFGenerator = ({ filter }) => {
                             cartesValeur.push({
                                 type: "valeur",
                                 title: formatPropertyName(propriete),
-                                content: valeur,
-                                emoji: getCardEmoji("valeur", propriete),
+                                content: `${valeur} (${famille})`,
+                                iconName: getCardIconName("valeur", propriete),
                                 color: getCardColor("valeur", propriete),
                             });
                         });
@@ -211,6 +283,40 @@ const CardPDFGenerator = ({ filter }) => {
                 pdf.internal.pageSize.width / 2,
                 130,
                 { align: "center", maxWidth: 400 }
+            );
+
+            // Ajouter une image d'exemple en bas de la page de titre si disponible
+            if (iconCache && Object.keys(iconCache).length > 0) {
+                const sampleIconName = Object.keys(iconCache)[0];
+                const sampleIconData = iconCache[sampleIconName];
+                const iconX = pdf.internal.pageSize.width / 2 - ICON_SIZE;
+                const iconY = 200;
+                pdf.addImage(
+                    sampleIconData,
+                    "PNG",
+                    iconX,
+                    iconY,
+                    ICON_SIZE * 2,
+                    ICON_SIZE * 2
+                );
+            }
+
+            // Information sur le nombre de cartes
+            pdf.setFontSize(12);
+            pdf.text(
+                `Ce jeu contient ${cartesFamille.length} cartes Famille et ${cartesValeur.length} cartes Valeur.`,
+                pdf.internal.pageSize.width / 2,
+                350,
+                { align: "center" }
+            );
+
+            // Instructions d'impression
+            pdf.setFontSize(10);
+            pdf.text(
+                "Imprimez ce document recto-verso puis découpez les cartes selon les contours.",
+                pdf.internal.pageSize.width / 2,
+                370,
+                { align: "center" }
             );
 
             // Dessiner les cartes "Famille" si nécessaire
@@ -244,14 +350,15 @@ const CardPDFGenerator = ({ filter }) => {
                     const x = 40 + col * (CARD_WIDTH + 10);
                     const y = 50 + row * (CARD_HEIGHT + 10);
 
-                    drawCard(
+                    await drawCard(
                         pdf,
                         carte.title,
                         carte.content,
-                        carte.emoji,
+                        carte.iconName,
                         carte.color,
                         x,
-                        y
+                        y,
+                        carte.type
                     );
 
                     carteIndex++;
@@ -289,14 +396,15 @@ const CardPDFGenerator = ({ filter }) => {
                     const x = 40 + col * (CARD_WIDTH + 10);
                     const y = 50 + row * (CARD_HEIGHT + 10);
 
-                    drawCard(
+                    await drawCard(
                         pdf,
                         carte.title,
                         carte.content,
-                        carte.emoji,
+                        carte.iconName,
                         carte.color,
                         x,
-                        y
+                        y,
+                        carte.type
                     );
 
                     carteIndex++;
@@ -399,6 +507,19 @@ const CardPDFGenerator = ({ filter }) => {
                 });
             }
 
+            // Numéros de page
+            const totalPages = pageCounter;
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(8);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(
+                    `Page ${i} / ${totalPages}`,
+                    pdf.internal.pageSize.width - 50,
+                    pdf.internal.pageSize.height - 20
+                );
+            }
+
             // Générer le PDF
             pdf.save(`jeu-cartes-${selectedData.id}.pdf`);
 
@@ -418,9 +539,33 @@ const CardPDFGenerator = ({ filter }) => {
             variant="primary"
             onClick={handleGeneratePDF}
             className="flex items-center justify-center gap-2"
-            disabled={isGenerating}
+            disabled={isGenerating || isPreloading}
         >
-            {isGenerating ? (
+            {isPreloading ? (
+                <>
+                    <svg
+                        className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        ></circle>
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                    </svg>
+                    Chargement des icônes...
+                </>
+            ) : isGenerating ? (
                 <>
                     <svg
                         className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"

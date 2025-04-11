@@ -1,7 +1,7 @@
 // src/components/Card/Card.jsx
 import React from "react";
 import PropTypes from "prop-types";
-import EmojiIcon from "../UI/EmojiIcon";
+import HeroIconDisplay from "../UI/HeroIconDisplay";
 
 /**
  * Composant de carte pédagogique
@@ -35,7 +35,7 @@ const Card = ({ type, title, content, color = "#FFFFFF", icon, style }) => {
         <div className={`card ${getTypeStyle()} h-full`} style={cardStyle}>
             <div className="card-header flex items-center justify-between">
                 <h3 className="text-lg font-bold">{title}</h3>
-                {icon && <EmojiIcon name={icon} size={28} />}
+                {icon && <HeroIconDisplay name={icon} type={type} size={28} />}
             </div>
             <div className="card-body">
                 <p>{content}</p>
