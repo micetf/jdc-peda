@@ -1,11 +1,17 @@
 // src/data/index.js
 import dataHistory from "./dataHistory";
 import dataPedagogy from "./dataPedagogy";
-
+import dataSystemeSolaire from "./dataSystemeSolaire";
+import dataClassificationVivant from "./dataClassificationVivant";
 /**
  * Liste de tous les jeux de cartes disponibles
  */
-const allData = [dataHistory, dataPedagogy];
+const allData = [
+    dataHistory,
+    dataPedagogy,
+    dataSystemeSolaire,
+    dataClassificationVivant,
+];
 
 /**
  * Récupère tous les jeux de cartes disponibles

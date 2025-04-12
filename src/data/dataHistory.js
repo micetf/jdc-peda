@@ -232,6 +232,34 @@ const dataHistory = new DataJeu({
                     "Habitat et architecture": {
                         "Grottes ornées":
                             "history/values/prehistoire/habitat/grottes.jpg",
+                        "Campements nomades":
+                            "history/values/prehistoire/habitat/campements.jpg",
+                        "Premiers villages":
+                            "history/values/prehistoire/habitat/villages.jpg",
+                    },
+                    "Personnages importants": {
+                        "Homo habilis":
+                            "history/values/prehistoire/personnages/habilis.jpg",
+                        "Homo erectus":
+                            "history/values/prehistoire/personnages/erectus.jpg",
+                        "Homo sapiens":
+                            "history/values/prehistoire/personnages/sapiens.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        "Maîtrise du feu":
+                            "history/values/prehistoire/inventions/feu.jpg",
+                        "Outils en pierre taillée":
+                            "history/values/prehistoire/inventions/outils.jpg",
+                        Agriculture:
+                            "history/values/prehistoire/inventions/agriculture.jpg",
+                    },
+                    "Vie quotidienne": {
+                        "Chasse et cueillette":
+                            "history/values/prehistoire/vie/chasse.jpg",
+                        "Peintures rupestrese":
+                            "history/values/prehistoire/vie/peintures.jpg",
+                        "Premiers rituels":
+                            "history/values/prehistoire/vie/rituels.jpg",
                     },
                 },
             },
