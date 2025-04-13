@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { DataProvider } from "./components/Data/DataContext";
+import DataProvider from "./components/Data/DataProvider"; // Import mis à jour
 import Header from "./components/Layout/Header";
 import Footer from "./components/Layout/Footer";
 import Home from "./pages/Home";

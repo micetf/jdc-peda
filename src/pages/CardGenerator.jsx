@@ -4,7 +4,7 @@ import CardGrid from "../components/Card/CardGrid";
 import CardPDFGenerator from "../components/Card/CardPDFGenerator";
 import Button from "../components/UI/Button";
 import Select from "../components/UI/Select";
-import { useData } from "../components/Data/DataContext";
+import useData from "../components/Data/useData";
 
 /**
  * Page de génération de cartes
