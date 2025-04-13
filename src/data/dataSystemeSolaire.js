@@ -260,6 +260,8 @@ const dataSystemeSolaire = new DataJeu({
             Jupiter:
                 "Géante gazeuse massive, la plus grande planète, composée d'hydrogène et d'hélium, célèbre pour sa Grande Tache Rouge et ses nombreuses lunes.",
         },
+        aiImageCredit:
+            "Sources des illustrations : Les images des familles (planètes et Soleil) proviennent de Pixabay.com, un site d'images libres de droits. Les images des propriétés ont été générées par l'IA de Microsoft Copilot. Toutes ces images sont utilisées à des fins pédagogiques uniquement.",
     },
 });
 

@@ -283,6 +283,8 @@ const dataPedagogy = new DataJeu({
             Institutionnalisation:
                 "Phase finale qui permet d'ancrer les apprentissages en formalisant les savoirs et savoir-faire construits pendant la séance. Elle assure la transition vers les apprentissages futurs.",
         },
+        aiImageCredit:
+            "Les illustrations utilisées dans ce jeu sont basées sur des émoticônes Unicode capturés via des captures d'écran. Aucune image générée par IA n'a été utilisée pour ce corpus pédagogique.",
     },
 });
 

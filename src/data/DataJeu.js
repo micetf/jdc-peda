@@ -4,6 +4,8 @@
  * Classe représentant un jeu de cartes pédagogique
  */
 class DataJeu {
+    // src/data/DataJeu.js - Extrait montrant les changements à apporter
+
     /**
      * Crée une nouvelle instance de jeu de cartes pédagogique
      * @param {Object} options - Options de configuration du jeu
@@ -13,7 +15,7 @@ class DataJeu {
      * @param {string[]} options.familles - Liste des familles du jeu
      * @param {string[]} options.proprietes - Liste des propriétés communes à toutes les familles
      * @param {Object} options.valeurs - Dictionnaire des valeurs par famille et propriété
-     * @param {Object} options.metadata - Métadonnées du jeu (niveau, objectifs, regles, colors, images, chronologie, contextes)
+     * @param {Object} options.metadata - Métadonnées du jeu (niveau, objectifs, regles, colors, images, chronologie, contextes, aiImageCredit)
      */
     constructor(options) {
         // Validation des propriétés obligatoires
@@ -66,6 +68,8 @@ class DataJeu {
             },
             chronologie: options.metadata.chronologie || {},
             contextes: options.metadata.contextes || {},
+            // Nouvelle propriété pour le crédit des images générées par IA
+            aiImageCredit: options.metadata.aiImageCredit || null,
         };
 
         // Validation de la structure des valeurs

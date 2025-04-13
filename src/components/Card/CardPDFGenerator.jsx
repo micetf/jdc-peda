@@ -305,6 +305,123 @@ const CardPDFGenerator = ({ filter }) => {
     };
 
     /**
+     * Ajoute des pages de correction à la fin du PDF
+     * @param {jsPDF} pdf - Instance jsPDF
+     */
+    const addCorrectionPages = (pdf) => {
+        // Récupération des familles ordonnées
+        const famillesTriees = selectedData.getFamillesTriees();
+
+        // Ajouter une page de correction
+        pdf.addPage();
+        pdf.setFontSize(16);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Fiche de correction", pdf.internal.pageSize.width / 2, 30, {
+            align: "center",
+        });
+
+        // Position initiale
+        let y = 60;
+        const margin = 40;
+        const lineHeight = 14;
+        const propertyIndent = 15;
+        const valueIndent = 30;
+        const maxWidth = pdf.internal.pageSize.width - margin * 2;
+
+        // Pour chaque famille, afficher les propriétés et valeurs
+        for (
+            let familleIndex = 0;
+            familleIndex < famillesTriees.length;
+            familleIndex++
+        ) {
+            const famille = famillesTriees[familleIndex];
+
+            // Vérifier s'il reste assez d'espace sur la page actuelle
+            // Une famille complète prend environ 1 + 4 + (3 * 4) = 17 lignes * lineHeight
+            const estimatedHeight =
+                (1 + selectedData.proprietes.length * (1 + 3)) * lineHeight;
+            if (y + estimatedHeight > pdf.internal.pageSize.height - 40) {
+                pdf.addPage();
+                pdf.setFontSize(16);
+                pdf.setFont("helvetica", "bold");
+                pdf.text(
+                    "Fiche de correction (suite)",
+                    pdf.internal.pageSize.width / 2,
+                    30,
+                    {
+                        align: "center",
+                    }
+                );
+                y = 60;
+            }
+
+            // Afficher le nom de la famille avec son numéro d'ordre
+            const ordreChronologie =
+                selectedData.metadata.chronologie[famille]?.ordre ||
+                familleIndex + 1;
+            pdf.setFontSize(14);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(`${ordreChronologie}. ${famille}`, margin, y);
+            y += lineHeight * 1.5;
+
+            // Pour chaque propriété
+            for (const propriete of selectedData.proprietes) {
+                // Afficher le nom de la propriété
+                pdf.setFontSize(12);
+                pdf.setFont("helvetica", "bold");
+                pdf.text(propriete + " :", margin + propertyIndent, y);
+                y += lineHeight;
+
+                // Récupérer et afficher les valeurs de cette propriété
+                const valeurs = selectedData.getValeurs(famille, propriete);
+                pdf.setFontSize(10);
+                pdf.setFont("helvetica", "normal");
+
+                // Pour chaque valeur
+                for (
+                    let valeurIndex = 0;
+                    valeurIndex < valeurs.length;
+                    valeurIndex++
+                ) {
+                    const valeur = valeurs[valeurIndex];
+                    // Diviser le texte en lignes si nécessaire
+                    const valueLines = pdf.splitTextToSize(
+                        valeur,
+                        maxWidth - margin - valueIndent
+                    );
+                    pdf.text(
+                        `${valeurIndex + 1}. ${valueLines[0]}`,
+                        margin + valueIndent,
+                        y
+                    );
+
+                    // Si la valeur a plusieurs lignes
+                    for (
+                        let lineIndex = 1;
+                        lineIndex < valueLines.length;
+                        lineIndex++
+                    ) {
+                        y += lineHeight;
+                        pdf.text(
+                            valueLines[lineIndex],
+                            margin + valueIndent + 10,
+                            y
+                        );
+                    }
+
+                    y += lineHeight;
+                }
+
+                // Espace après chaque propriété
+                y += lineHeight / 2;
+            }
+
+            // Espace après chaque famille
+            y += lineHeight;
+        }
+    };
+
+    /**
      * Génère le PDF de cartes
      */
     const handleGeneratePDF = async () => {
@@ -475,7 +592,22 @@ const CardPDFGenerator = ({ filter }) => {
                         yInfo += objLines.length * 14 + 5;
                     });
                 }
+
+                // Ajouter la mention des images générées par IA
+                if (selectedData.metadata.aiImageCredit) {
+                    yInfo += 20;
+                    pdf.setFontSize(12);
+                    pdf.setFont("helvetica", "italic");
+                    const aiImageLines = pdf.splitTextToSize(
+                        selectedData.metadata.aiImageCredit,
+                        pdf.internal.pageSize.width - 100
+                    );
+                    pdf.text(aiImageLines, 50, yInfo);
+                }
             }
+
+            // --- Pages de correction à la fin ---
+            addCorrectionPages(pdf);
 
             // --- Sauvegarde ---
             pdf.save(`jeu-cartes-${selectedData.id}-${filter}.pdf`);

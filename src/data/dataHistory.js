@@ -256,10 +256,179 @@ const dataHistory = new DataJeu({
                     "Vie quotidienne": {
                         "Chasse et cueillette":
                             "history/values/prehistoire/vie/chasse.jpg",
-                        "Peintures rupestrese":
+                        "Peintures rupestres":
                             "history/values/prehistoire/vie/peintures.jpg",
                         "Premiers rituels":
                             "history/values/prehistoire/vie/rituels.jpg",
+                    },
+                },
+                Antiquité: {
+                    "Habitat et architecture": {
+                        "Temples grecs":
+                            "history/values/antiquite/habitat/temples.jpg",
+                        "Colisée romain":
+                            "history/values/antiquite/habitat/colisee.jpg",
+                        "Pyramides égyptiennes":
+                            "history/values/antiquite/habitat/pyramides.jpg",
+                    },
+                    "Personnages importants": {
+                        "Jules César":
+                            "history/values/antiquite/personnages/jules.jpg",
+                        Cléopâtre:
+                            "history/values/antiquite/personnages/cleopatre.jpg",
+                        "Alexandre le Grand":
+                            "history/values/antiquite/personnages/alexandre.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        Écriture:
+                            "history/values/antiquite/inventions/ecriture.jpg",
+                        Démocratie:
+                            "history/values/antiquite/inventions/democratie.jpg",
+                        Aqueduc:
+                            "history/values/antiquite/inventions/aqueduc.jpg",
+                    },
+                    "Vie quotidienne": {
+                        "Jeux olympiques":
+                            "history/values/antiquite/vie/jeux-olympiques.jpg",
+                        "Thermes romains":
+                            "history/values/antiquite/vie/thermes-romains.jpg",
+                        Commerce:
+                            "history/values/antiquite/vie/commerce-maritime.jpg",
+                    },
+                },
+                "Moyen Âge": {
+                    "Habitat et architecture": {
+                        "Châteaux forts":
+                            "history/values/moyen-age/habitat/chateaux-forts.jpg",
+                        "Cathédrales gothiques":
+                            "history/values/moyen-age/habitat/cathedrales-gothiques.jpg",
+                        "Villages fortifiés":
+                            "history/values/moyen-age/habitat/villages-fortifies.jpg",
+                    },
+                    "Personnages importants": {
+                        Charlemagne:
+                            "history/values/moyen-age/personnages/charlemagne.jpg",
+                        "Jeanne d'Arc":
+                            "history/values/moyen-age/personnages/jeanne.jpg",
+                        "Guillaume le Conquérant":
+                            "history/values/moyen-age/personnages/guillaume.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        "Moulin à eau":
+                            "history/values/moyen-age/inventions/moulin-a-eau.jpg",
+                        "Horloge mécanique":
+                            "history/values/moyen-age/inventions/horloge-mecanique.jpg",
+                        Boussole:
+                            "history/values/moyen-age/inventions/boussole.jpg",
+                    },
+                    "Vie quotidienne": {
+                        "Tournois de chevalerie":
+                            "history/values/moyen-age/vie/tournois.jpg",
+                        "Foires et marchés":
+                            "history/values/moyen-age/vie/foires.jpg",
+                        "Vie monastique":
+                            "history/values/moyen-age/vie/vie-monastique.jpg",
+                    },
+                },
+                Renaissance: {
+                    "Habitat et architecture": {
+                        "Châteaux de la Loire":
+                            "history/values/renaissance/habitat/chateaux.jpg",
+                        "Dôme de Florence":
+                            "history/values/renaissance/habitat/dome.jpg",
+                        "Palais vénitiens":
+                            "history/values/renaissance/habitat/palais.jpg",
+                    },
+                    "Personnages importants": {
+                        "Léonard de Vinci":
+                            "history/values/renaissance/personnages/leonard.jpg",
+                        Gutenberg:
+                            "history/values/renaissance/personnages/gutenberg.jpg",
+                        "François Ier":
+                            "history/values/renaissance/personnages/francois.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        Imprimerie:
+                            "history/values/renaissance/inventions/imprimerie.jpg",
+                        Perspective:
+                            "history/values/renaissance/inventions/perspective.jpg",
+                        Caravelle:
+                            "history/values/renaissance/inventions/caravelle.jpg",
+                    },
+                    "Vie quotidienne": {
+                        "Mécénat artistique":
+                            "history/values/renaissance/vie/mecenat.jpg",
+                        Humanisme:
+                            "history/values/renaissance/vie/humanisme.jpg",
+                        "Grandes explorations":
+                            "history/values/renaissance/vie/explorations.jpg",
+                    },
+                },
+                "Époque moderne": {
+                    "Habitat et architecture": {
+                        "Château de Versailles":
+                            "history/values/epoque-moderne/habitat/versailles.jpg",
+                        "Hôtels particuliers":
+                            "history/values/epoque-moderne/habitat/hotels.jpg",
+                        Manufactures:
+                            "history/values/epoque-moderne/habitat/manufactures.jpg",
+                    },
+                    "Personnages importants": {
+                        "Louis XIV":
+                            "history/values/epoque-moderne/personnages/louis.jpg",
+                        "Napoléon Bonaparte":
+                            "history/values/epoque-moderne/personnages/napoleon.jpg",
+                        "Marie-Antoinette":
+                            "history/values/epoque-moderne/personnages/marie.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        "Machine à vapeur":
+                            "history/values/epoque-moderne/inventions/machine.jpg",
+                        Montgolfière:
+                            "history/values/epoque-moderne/inventions/montgolfiere.jpg",
+                        Vaccine:
+                            "history/values/epoque-moderne/inventions/vaccine.jpg",
+                    },
+                    "Vie quotidienne": {
+                        "Salons littéraires":
+                            "history/values/epoque-moderne/vie/salons.jpg",
+                        "Révolution française":
+                            "history/values/epoque-moderne/vie/revolution.jpg",
+                        Colonies:
+                            "history/values/epoque-moderne/vie/colonies.jpg",
+                    },
+                },
+                "Époque contemporaine": {
+                    "Habitat et architecture": {
+                        "Tour Eiffel":
+                            "history/values/epoque-contemporaine/habitat/tour.jpg",
+                        "Gratte-ciels":
+                            "history/values/epoque-contemporaine/habitat/gratte-ciels.jpg",
+                        "Habitations à loyer modéré":
+                            "history/values/epoque-contemporaine/habitat/habitation.jpg",
+                    },
+                    "Personnages importants": {
+                        "Marie Curie":
+                            "history/values/epoque-contemporaine/personnages/marie.jpg",
+                        "Charles de Gaulle":
+                            "history/values/epoque-contemporaine/personnages/charles.jpg",
+                        "Simone Veil":
+                            "history/values/epoque-contemporaine/personnages/simone.jpg",
+                    },
+                    "Inventions et découvertes": {
+                        Électricité:
+                            "history/values/epoque-contemporaine/inventions/electricite.jpg",
+                        Automobile:
+                            "history/values/epoque-contemporaine/inventions/automobile.jpg",
+                        Internet:
+                            "history/values/epoque-contemporaine/inventions/internet.jpg",
+                    },
+                    "Vie quotidienne": {
+                        Cinéma: "history/values/epoque-contemporaine/vie/cinema.jpg",
+                        Télévision:
+                            "history/values/epoque-contemporaine/vie/television.jpg",
+                        "Téléphone portable":
+                            "history/values/epoque-contemporaine/vie/telephone.jpg",
                     },
                 },
             },
