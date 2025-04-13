@@ -161,9 +161,9 @@ class DataJeu {
             propriete &&
             valuesImages[famille] &&
             valuesImages[famille][propriete] &&
-            valuesImages[famille][propriete][valeur]
+            valuesImages[famille][propriete][valeur?.id || valeur]
         ) {
-            return valuesImages[famille][propriete][valeur];
+            return valuesImages[famille][propriete][valeur?.id || valeur];
         }
 
         // 2. Vérifier l'image de la propriété (priorité moyenne)
@@ -306,10 +306,10 @@ class DataJeu {
                             root +
                             this.getImagePourCarte(famille, propriete, valeur);
                         cards.push({
-                            id: `valeur-${famille}-${propriete}-${valeur}`,
+                            id: `valeur-${famille}-${propriete}-${valeur?.id || valeur}`,
                             type: "valeur",
                             title: propriete, // Mettre le nom de la propriété comme titre
-                            content: valeur, // Mettre uniquement la valeur comme contenu
+                            content: valeur?.texte || valeur, // Mettre uniquement la valeur comme contenu
                             color,
                             image, // Image prioritaire ajoutée
                             familyName: famille,

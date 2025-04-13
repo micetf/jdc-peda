@@ -85,7 +85,7 @@ const Card = ({
                 {renderImage()}
                 <div className="p-4">
                     {familyDescription ? (
-                        <p className="text-sm text-gray-700 text-center">
+                        <p className="text-sm text-gray-700 text-left">
                             {familyDescription}
                         </p>
                     ) : null}

@@ -26,132 +26,356 @@ const dataHistory = new DataJeu({
     valeurs: {
         Préhistoire: {
             "Habitat et architecture": [
-                "Grottes ornées",
-                "Campements nomades",
-                "Premiers villages",
+                {
+                    id: "grottes-ornees",
+                    texte: "Grottes ornées de peintures servant d'abris contre les intempéries et les prédateurs",
+                },
+                {
+                    id: "campements-nomades",
+                    texte: "Campements nomades de tentes en peaux d'animaux, déplacés selon les migrations des troupeaux",
+                },
+                {
+                    id: "premiers-villages",
+                    texte: "Premiers villages de huttes en bois et torchis, apparus avec la sédentarisation et l'agriculture",
+                },
             ],
             "Personnages importants": [
-                "Homo habilis",
-                "Homo erectus",
-                "Homo sapiens",
+                {
+                    id: "homo-habilis",
+                    texte: "Homo habilis, premier fabricant d'outils en pierre taillée, apparu il y a environ 2,5 millions d'années",
+                },
+                {
+                    id: "homo-erectus",
+                    texte: "Homo erectus, découvreur du feu et premier à quitter l'Afrique pour explorer d'autres continents",
+                },
+                {
+                    id: "homo-sapiens",
+                    texte: "Homo sapiens, notre espèce capable de pensée abstraite, d'art et de langage complexe",
+                },
             ],
             "Inventions et découvertes": [
-                "Maîtrise du feu",
-                "Outils en pierre taillée",
-                "Agriculture",
+                {
+                    id: "maitrise-feu",
+                    texte: "Maîtrise du feu permettant de cuire les aliments, se réchauffer et repousser les prédateurs",
+                },
+                {
+                    id: "outils-pierre",
+                    texte: "Outils en pierre taillée comme les bifaces et grattoirs, utilisés pour chasser et travailler les matériaux",
+                },
+                {
+                    id: "agriculture",
+                    texte: "Agriculture et élevage menant à la sédentarisation et au développement des premières civilisations",
+                },
             ],
             "Vie quotidienne": [
-                "Chasse et cueillette",
-                "Peintures rupestres",
-                "Premiers rituels",
+                {
+                    id: "chasse-cueillette",
+                    texte: "Chasse et cueillette assurant la survie des groupes nomades pendant des millénaires",
+                },
+                {
+                    id: "peintures-rupestres",
+                    texte: "Peintures rupestres témoignant d'une pensée symbolique et de rituels liés à la chasse",
+                },
+                {
+                    id: "rituels-funeraires",
+                    texte: "Premiers rituels funéraires révélant des croyances spirituelles et une conscience de la mort",
+                },
             ],
         },
 
         Antiquité: {
             "Habitat et architecture": [
-                "Temples grecs",
-                "Colisée romain",
-                "Pyramides égyptiennes",
+                {
+                    id: "temples-grecs",
+                    texte: "Temples grecs aux colonnes et proportions harmonieuses, dédiés aux divinités de l'Olympe",
+                },
+                {
+                    id: "colisee-romain",
+                    texte: "Colisée romain, amphithéâtre gigantesque accueillant combats de gladiateurs et spectacles de masse",
+                },
+                {
+                    id: "pyramides-egyptiennes",
+                    texte: "Pyramides égyptiennes, tombeaux monumentaux des pharaons conçus pour assurer leur vie éternelle",
+                },
             ],
             "Personnages importants": [
-                "Jules César",
-                "Cléopâtre",
-                "Alexandre le Grand",
+                {
+                    id: "jules-cesar",
+                    texte: "Jules César, général et homme d'État romain qui a transformé la République en Empire",
+                },
+                {
+                    id: "cleopatre",
+                    texte: "Cléopâtre, dernière reine d'Égypte, femme cultivée et stratège politique face à Rome",
+                },
+                {
+                    id: "alexandre-grand",
+                    texte: "Alexandre le Grand, conquérant macédonien créant un empire de la Grèce à l'Inde en seulement 12 ans",
+                },
             ],
-            "Inventions et découvertes": ["Écriture", "Démocratie", "Aqueduc"],
+            "Inventions et découvertes": [
+                {
+                    id: "ecriture",
+                    texte: "Écriture permettant de consigner lois, comptes et récits, fondement des administrations et de la littérature",
+                },
+                {
+                    id: "democratie",
+                    texte: "Démocratie athénienne, première forme de gouvernement où les citoyens participent directement aux décisions",
+                },
+                {
+                    id: "aqueduc",
+                    texte: "Aqueduc romain, système ingénieux acheminant l'eau sur de longues distances vers les villes",
+                },
+            ],
             "Vie quotidienne": [
-                "Jeux olympiques",
-                "Thermes romains",
-                "Commerce maritime",
+                {
+                    id: "jeux-olympiques",
+                    texte: "Jeux olympiques, compétitions sportives et religieuses réunissant les cités grecques tous les quatre ans",
+                },
+                {
+                    id: "thermes-romains",
+                    texte: "Thermes romains, bains publics où les citoyens se lavaient, socialisaient et pratiquaient le sport",
+                },
+                {
+                    id: "commerce-maritime",
+                    texte: "Commerce maritime méditerranéen reliant les civilisations et favorisant les échanges culturels",
+                },
             ],
         },
 
         "Moyen Âge": {
             "Habitat et architecture": [
-                "Châteaux forts",
-                "Cathédrales gothiques",
-                "Villages fortifiés",
+                {
+                    id: "chateaux-forts",
+                    texte: "Châteaux forts aux épaisses murailles et donjons, résidences seigneuriales offrant protection en temps de guerre",
+                },
+                {
+                    id: "cathedrales-gothiques",
+                    texte: "Cathédrales gothiques aux arcs-boutants et vitraux colorés, s'élevant vers le ciel comme prière de pierre",
+                },
+                {
+                    id: "villages-fortifies",
+                    texte: "Villages fortifiés regroupés autour d'une église, protégés par des remparts contre les attaques",
+                },
             ],
             "Personnages importants": [
-                "Charlemagne",
-                "Jeanne d'Arc",
-                "Guillaume le Conquérant",
+                {
+                    id: "charlemagne",
+                    texte: "Charlemagne, roi des Francs sacré empereur en 800, unificateur de l'Europe et promoteur de l'éducation",
+                },
+                {
+                    id: "jeanne-arc",
+                    texte: "Jeanne d'Arc, paysanne devenue chef de guerre, symbole de résistance française pendant la guerre de Cent Ans",
+                },
+                {
+                    id: "guillaume-conquerant",
+                    texte: "Guillaume le Conquérant, duc normand devenu roi d'Angleterre après la bataille d'Hastings en 1066",
+                },
             ],
             "Inventions et découvertes": [
-                "Moulin à eau",
-                "Horloge mécanique",
-                "Boussole",
+                {
+                    id: "moulin-eau",
+                    texte: "Moulin à eau transformant la force hydraulique en énergie mécanique pour moudre, scier ou forger",
+                },
+                {
+                    id: "horloge-mecanique",
+                    texte: "Horloge mécanique régulant la vie urbaine et religieuse, marquant une nouvelle perception du temps",
+                },
+                {
+                    id: "boussole",
+                    texte: "Boussole facilitant la navigation maritime et les grandes explorations, même par temps couvert",
+                },
             ],
             "Vie quotidienne": [
-                "Tournois de chevalerie",
-                "Foires et marchés",
-                "Vie monastique",
+                {
+                    id: "tournois-chevalerie",
+                    texte: "Tournois de chevalerie, compétitions militaires et fêtes où les nobles démontraient leur bravoure",
+                },
+                {
+                    id: "foires-marches",
+                    texte: "Foires et marchés, centres d'échanges commerciaux attirant marchands et voyageurs de toute l'Europe",
+                },
+                {
+                    id: "vie-monastique",
+                    texte: "Vie monastique dans les abbayes, lieux de prière, de copie de manuscrits et de préservation du savoir",
+                },
             ],
         },
 
         Renaissance: {
             "Habitat et architecture": [
-                "Châteaux de la Loire",
-                "Dôme de Florence",
-                "Palais vénitiens",
+                {
+                    id: "chateaux-loire",
+                    texte: "Châteaux de la Loire alliant élégance française et influences italiennes, symboles de prestige royal",
+                },
+                {
+                    id: "dome-florence",
+                    texte: "Dôme de Florence conçu par Brunelleschi, prouesse technique mêlant mathématiques et beauté architecturale",
+                },
+                {
+                    id: "palais-venitiens",
+                    texte: "Palais vénitiens aux façades ornées donnant sur les canaux, mêlant styles gothique et antique",
+                },
             ],
             "Personnages importants": [
-                "Léonard de Vinci",
-                "Gutenberg",
-                "François Ier",
+                {
+                    id: "leonard-vinci",
+                    texte: "Léonard de Vinci, artiste et savant italien incarnant l'idéal de l'homme universel par ses multiples talents",
+                },
+                {
+                    id: "gutenberg",
+                    texte: "Gutenberg, inventeur de l'imprimerie moderne en Europe, révolutionnant la diffusion des idées et du savoir",
+                },
+                {
+                    id: "francois-premier",
+                    texte: "François Ier, roi de France et mécène invitant artistes italiens à sa cour et fondant le Collège de France",
+                },
             ],
             "Inventions et découvertes": [
-                "Imprimerie",
-                "Perspective en peinture",
-                "Caravelle",
+                {
+                    id: "imprimerie",
+                    texte: "Imprimerie à caractères mobiles rendant les livres plus accessibles et accélérant la diffusion des connaissances",
+                },
+                {
+                    id: "perspective",
+                    texte: "Perspective en peinture créant l'illusion de profondeur, fondée sur des principes scientifiques et mathématiques",
+                },
+                {
+                    id: "caravelle",
+                    texte: "Caravelle, navire innovant permettant les explorations lointaines et la découverte du Nouveau Monde",
+                },
             ],
             "Vie quotidienne": [
-                "Mécénat artistique",
-                "Humanisme",
-                "Grandes explorations",
+                {
+                    id: "mecenat-artistique",
+                    texte: "Mécénat artistique par nobles et riches marchands, finançant artistes et savants pour affirmer leur prestige",
+                },
+                {
+                    id: "humanisme",
+                    texte: "Humanisme redécouvrant les textes antiques et plaçant l'homme au centre de la réflexion philosophique",
+                },
+                {
+                    id: "explorations-maritimes",
+                    texte: "Grandes explorations maritimes vers les Amériques et l'Asie, élargissant la vision européenne du monde",
+                },
             ],
         },
 
         "Époque moderne": {
             "Habitat et architecture": [
-                "Château de Versailles",
-                "Hôtels particuliers",
-                "Manufactures",
+                {
+                    id: "versailles",
+                    texte: "Château de Versailles, immense palais aux 700 pièces et jardins à la française, symbole du pouvoir absolu",
+                },
+                {
+                    id: "hotels-particuliers",
+                    texte: "Hôtels particuliers urbains affichant la richesse des élites par leurs décorations raffinées et leur confort",
+                },
+                {
+                    id: "manufactures",
+                    texte: "Manufactures rassemblant artisans et ouvriers dans de grands bâtiments organisés pour une production efficace",
+                },
             ],
             "Personnages importants": [
-                "Louis XIV",
-                "Napoléon Bonaparte",
-                "Marie-Antoinette",
+                {
+                    id: "louis-xiv",
+                    texte: "Louis XIV, le Roi Soleil, monarque absolu régnant 72 ans et contrôlant la noblesse à Versailles",
+                },
+                {
+                    id: "napoleon",
+                    texte: "Napoléon Bonaparte, général devenu empereur, réformateur administratif étendant son empire sur l'Europe",
+                },
+                {
+                    id: "marie-antoinette",
+                    texte: "Marie-Antoinette, reine d'origine autrichienne, symbole du luxe de la cour, guillotinée pendant la Révolution",
+                },
             ],
             "Inventions et découvertes": [
-                "Machine à vapeur",
-                "Montgolfière",
-                "Vaccine",
+                {
+                    id: "machine-vapeur",
+                    texte: "Machine à vapeur convertissant l'énergie thermique en force mécanique, moteur de la révolution industrielle",
+                },
+                {
+                    id: "montgolfiere",
+                    texte: "Montgolfière, premier aérostat permettant à l'homme de s'élever dans les airs, créée en France en 1783",
+                },
+                {
+                    id: "vaccin",
+                    texte: "Vaccin contre la variole, première immunisation efficace contre une maladie mortelle, développé par Jenner en 1796",
+                },
             ],
             "Vie quotidienne": [
-                "Salons littéraires",
-                "Révolution française",
-                "Colonies",
+                {
+                    id: "salons-litteraires",
+                    texte: "Salons littéraires animés par des femmes cultivées, lieux de discussions intellectuelles et de nouvelles idées",
+                },
+                {
+                    id: "revolution-francaise",
+                    texte: "Révolution française abolissant les privilèges et la monarchie absolue au nom de la liberté et de l'égalité",
+                },
+                {
+                    id: "colonies",
+                    texte: "Colonies européennes en Amérique, Afrique et Asie, sources de richesses mais basées sur l'exploitation",
+                },
             ],
         },
 
         "Époque contemporaine": {
             "Habitat et architecture": [
-                "Tour Eiffel",
-                "Gratte-ciels",
-                "Habitations à loyer modéré",
+                {
+                    id: "tour-eiffel",
+                    texte: "Tour Eiffel, structure métallique de 324 mètres construite pour l'Exposition universelle de 1889, symbole de Paris",
+                },
+                {
+                    id: "gratte-ciels",
+                    texte: "Gratte-ciels en acier et verre s'élevant toujours plus haut, transformant le paysage urbain des grandes villes",
+                },
+                {
+                    id: "hlm",
+                    texte: "HLM construits en masse après 1945 pour loger familles modestes et faire face à la crise du logement",
+                },
             ],
             "Personnages importants": [
-                "Marie Curie",
-                "Charles de Gaulle",
-                "Simone Veil",
+                {
+                    id: "marie-curie",
+                    texte: "Marie Curie, physicienne découvreuse du radium et du polonium, première femme à recevoir deux prix Nobel",
+                },
+                {
+                    id: "charles-de-gaulle",
+                    texte: "Charles de Gaulle, chef de la France libre pendant l'Occupation puis fondateur de la Ve République en 1958",
+                },
+                {
+                    id: "simone-veil",
+                    texte: "Simone Veil, rescapée des camps nazis, ministre ayant fait adopter la loi sur l'IVG et symbole des droits des femmes",
+                },
             ],
             "Inventions et découvertes": [
-                "Électricité",
-                "Automobile",
-                "Internet",
+                {
+                    id: "electricite",
+                    texte: "Électricité domestique révolutionnant le quotidien avec l'éclairage, les appareils ménagers et les communications",
+                },
+                {
+                    id: "automobile",
+                    texte: "Automobile individuelle transformant les déplacements, l'urbanisme et l'aménagement du territoire",
+                },
+                {
+                    id: "internet",
+                    texte: "Internet connectant les ordinateurs du monde entier, bouleversant l'accès à l'information et la communication",
+                },
             ],
-            "Vie quotidienne": ["Cinéma", "Télévision", "Téléphone portable"],
+            "Vie quotidienne": [
+                {
+                    id: "cinema",
+                    texte: "Cinéma, invention des frères Lumière devenue art majeur et divertissement populaire mondial",
+                },
+                {
+                    id: "television",
+                    texte: "Télévision diffusant programmes et informations dans les foyers, influençant fortement opinions et cultures",
+                },
+                {
+                    id: "telephone-portable",
+                    texte: "Téléphone portable évoluant en smartphone multifonction, connectant personnes et services en permanence",
+                },
+            ],
         },
     },
 
@@ -230,204 +454,202 @@ const dataHistory = new DataJeu({
             values: {
                 Préhistoire: {
                     "Habitat et architecture": {
-                        "Grottes ornées":
+                        "grottes-ornees":
                             "history/values/prehistoire/habitat/grottes.jpg",
-                        "Campements nomades":
+                        "campements-nomades":
                             "history/values/prehistoire/habitat/campements.jpg",
-                        "Premiers villages":
+                        "premiers-villages":
                             "history/values/prehistoire/habitat/villages.jpg",
                     },
                     "Personnages importants": {
-                        "Homo habilis":
+                        "homo-habilis":
                             "history/values/prehistoire/personnages/habilis.jpg",
-                        "Homo erectus":
+                        "homo-erectus":
                             "history/values/prehistoire/personnages/erectus.jpg",
-                        "Homo sapiens":
+                        "homo-sapiens":
                             "history/values/prehistoire/personnages/sapiens.jpg",
                     },
                     "Inventions et découvertes": {
-                        "Maîtrise du feu":
+                        "maitrise-feu":
                             "history/values/prehistoire/inventions/feu.jpg",
-                        "Outils en pierre taillée":
+                        "outils-pierre":
                             "history/values/prehistoire/inventions/outils.jpg",
-                        Agriculture:
+                        agriculture:
                             "history/values/prehistoire/inventions/agriculture.jpg",
                     },
                     "Vie quotidienne": {
-                        "Chasse et cueillette":
+                        "chasse-cueillette":
                             "history/values/prehistoire/vie/chasse.jpg",
-                        "Peintures rupestres":
+                        "peintures-rupestres":
                             "history/values/prehistoire/vie/peintures.jpg",
-                        "Premiers rituels":
+                        "rituels-funeraires":
                             "history/values/prehistoire/vie/rituels.jpg",
                     },
                 },
                 Antiquité: {
                     "Habitat et architecture": {
-                        "Temples grecs":
+                        "temples-grecs":
                             "history/values/antiquite/habitat/temples.jpg",
-                        "Colisée romain":
+                        "colisee-romain":
                             "history/values/antiquite/habitat/colisee.jpg",
-                        "Pyramides égyptiennes":
+                        "pyramides-egyptiennes":
                             "history/values/antiquite/habitat/pyramides.jpg",
                     },
                     "Personnages importants": {
-                        "Jules César":
+                        "jules-cesar":
                             "history/values/antiquite/personnages/jules.jpg",
-                        Cléopâtre:
+                        cleopatre:
                             "history/values/antiquite/personnages/cleopatre.jpg",
-                        "Alexandre le Grand":
+                        "alexandre-grand":
                             "history/values/antiquite/personnages/alexandre.jpg",
                     },
                     "Inventions et découvertes": {
-                        Écriture:
+                        ecriture:
                             "history/values/antiquite/inventions/ecriture.jpg",
-                        Démocratie:
+                        democratie:
                             "history/values/antiquite/inventions/democratie.jpg",
-                        Aqueduc:
+                        aqueduc:
                             "history/values/antiquite/inventions/aqueduc.jpg",
                     },
                     "Vie quotidienne": {
-                        "Jeux olympiques":
+                        "jeux-olympiques":
                             "history/values/antiquite/vie/jeux-olympiques.jpg",
-                        "Thermes romains":
+                        "thermes-romains":
                             "history/values/antiquite/vie/thermes-romains.jpg",
-                        Commerce:
+                        "commerce-maritime":
                             "history/values/antiquite/vie/commerce-maritime.jpg",
                     },
                 },
                 "Moyen Âge": {
                     "Habitat et architecture": {
-                        "Châteaux forts":
+                        "chateaux-forts":
                             "history/values/moyen-age/habitat/chateaux-forts.jpg",
-                        "Cathédrales gothiques":
+                        "cathedrales-gothiques":
                             "history/values/moyen-age/habitat/cathedrales-gothiques.jpg",
-                        "Villages fortifiés":
+                        "villages-fortifies":
                             "history/values/moyen-age/habitat/villages-fortifies.jpg",
                     },
                     "Personnages importants": {
-                        Charlemagne:
+                        charlemagne:
                             "history/values/moyen-age/personnages/charlemagne.jpg",
-                        "Jeanne d'Arc":
+                        "jeanne-arc":
                             "history/values/moyen-age/personnages/jeanne.jpg",
-                        "Guillaume le Conquérant":
+                        "guillaume-conquerant":
                             "history/values/moyen-age/personnages/guillaume.jpg",
                     },
                     "Inventions et découvertes": {
-                        "Moulin à eau":
+                        "moulin-eau":
                             "history/values/moyen-age/inventions/moulin-a-eau.jpg",
-                        "Horloge mécanique":
+                        "horloge-mecanique":
                             "history/values/moyen-age/inventions/horloge-mecanique.jpg",
-                        Boussole:
+                        boussole:
                             "history/values/moyen-age/inventions/boussole.jpg",
                     },
                     "Vie quotidienne": {
-                        "Tournois de chevalerie":
+                        "tournois-chevalerie":
                             "history/values/moyen-age/vie/tournois.jpg",
-                        "Foires et marchés":
+                        "foires-marches":
                             "history/values/moyen-age/vie/foires.jpg",
-                        "Vie monastique":
+                        "vie-monastique":
                             "history/values/moyen-age/vie/vie-monastique.jpg",
                     },
                 },
                 Renaissance: {
                     "Habitat et architecture": {
-                        "Châteaux de la Loire":
+                        "chateaux-loire":
                             "history/values/renaissance/habitat/chateaux.jpg",
-                        "Dôme de Florence":
+                        "dome-florence":
                             "history/values/renaissance/habitat/dome.jpg",
-                        "Palais vénitiens":
+                        "palais-venitiens":
                             "history/values/renaissance/habitat/palais.jpg",
                     },
                     "Personnages importants": {
-                        "Léonard de Vinci":
+                        "leonard-vinci":
                             "history/values/renaissance/personnages/leonard.jpg",
-                        Gutenberg:
+                        gutenberg:
                             "history/values/renaissance/personnages/gutenberg.jpg",
-                        "François Ier":
+                        "francois-premier":
                             "history/values/renaissance/personnages/francois.jpg",
                     },
                     "Inventions et découvertes": {
-                        Imprimerie:
+                        imprimerie:
                             "history/values/renaissance/inventions/imprimerie.jpg",
-                        Perspective:
+                        perspective:
                             "history/values/renaissance/inventions/perspective.jpg",
-                        Caravelle:
+                        caravelle:
                             "history/values/renaissance/inventions/caravelle.jpg",
                     },
                     "Vie quotidienne": {
-                        "Mécénat artistique":
+                        "mecenat-artistique":
                             "history/values/renaissance/vie/mecenat.jpg",
-                        Humanisme:
+                        humanisme:
                             "history/values/renaissance/vie/humanisme.jpg",
-                        "Grandes explorations":
+                        "explorations-maritimes":
                             "history/values/renaissance/vie/explorations.jpg",
                     },
                 },
                 "Époque moderne": {
                     "Habitat et architecture": {
-                        "Château de Versailles":
+                        versailles:
                             "history/values/epoque-moderne/habitat/versailles.jpg",
-                        "Hôtels particuliers":
+                        "hotels-particuliers":
                             "history/values/epoque-moderne/habitat/hotels.jpg",
-                        Manufactures:
+                        manufactures:
                             "history/values/epoque-moderne/habitat/manufactures.jpg",
                     },
                     "Personnages importants": {
-                        "Louis XIV":
+                        "louis-xiv":
                             "history/values/epoque-moderne/personnages/louis.jpg",
-                        "Napoléon Bonaparte":
+                        napoleon:
                             "history/values/epoque-moderne/personnages/napoleon.jpg",
-                        "Marie-Antoinette":
+                        "marie-antoinette":
                             "history/values/epoque-moderne/personnages/marie.jpg",
                     },
                     "Inventions et découvertes": {
-                        "Machine à vapeur":
+                        "machine-vapeur":
                             "history/values/epoque-moderne/inventions/machine.jpg",
-                        Montgolfière:
+                        montgolfiere:
                             "history/values/epoque-moderne/inventions/montgolfiere.jpg",
-                        Vaccine:
-                            "history/values/epoque-moderne/inventions/vaccine.jpg",
+                        vaccin: "history/values/epoque-moderne/inventions/vaccine.jpg",
                     },
                     "Vie quotidienne": {
-                        "Salons littéraires":
+                        "salons-litteraires":
                             "history/values/epoque-moderne/vie/salons.jpg",
-                        "Révolution française":
+                        "revolution-francaise":
                             "history/values/epoque-moderne/vie/revolution.jpg",
-                        Colonies:
+                        colonies:
                             "history/values/epoque-moderne/vie/colonies.jpg",
                     },
                 },
                 "Époque contemporaine": {
                     "Habitat et architecture": {
-                        "Tour Eiffel":
+                        "tour-eiffel":
                             "history/values/epoque-contemporaine/habitat/tour.jpg",
-                        "Gratte-ciels":
+                        "gratte-ciels":
                             "history/values/epoque-contemporaine/habitat/gratte-ciels.jpg",
-                        "Habitations à loyer modéré":
-                            "history/values/epoque-contemporaine/habitat/habitation.jpg",
+                        hlm: "history/values/epoque-contemporaine/habitat/habitation.jpg",
                     },
                     "Personnages importants": {
-                        "Marie Curie":
+                        "marie-curie":
                             "history/values/epoque-contemporaine/personnages/marie.jpg",
-                        "Charles de Gaulle":
+                        "charles-de-gaulle":
                             "history/values/epoque-contemporaine/personnages/charles.jpg",
-                        "Simone Veil":
+                        "simone-veil":
                             "history/values/epoque-contemporaine/personnages/simone.jpg",
                     },
                     "Inventions et découvertes": {
-                        Électricité:
+                        electricite:
                             "history/values/epoque-contemporaine/inventions/electricite.jpg",
-                        Automobile:
+                        automobile:
                             "history/values/epoque-contemporaine/inventions/automobile.jpg",
-                        Internet:
+                        internet:
                             "history/values/epoque-contemporaine/inventions/internet.jpg",
                     },
                     "Vie quotidienne": {
-                        Cinéma: "history/values/epoque-contemporaine/vie/cinema.jpg",
-                        Télévision:
+                        cinema: "history/values/epoque-contemporaine/vie/cinema.jpg",
+                        television:
                             "history/values/epoque-contemporaine/vie/television.jpg",
-                        "Téléphone portable":
+                        "telephone-portable":
                             "history/values/epoque-contemporaine/vie/telephone.jpg",
                     },
                 },

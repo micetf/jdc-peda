@@ -22,151 +22,366 @@ const dataClassificationVivant = new DataJeu({
         "Leurs super-pouvoirs !",
     ],
     valeurs: {
-        // ... (Les valeurs restent identiques à la version précédente)
         Mammifères: {
             "Où vivent-ils ?": [
-                "Dans la forêt",
-                "Dans la savane (herbes hautes)",
-                "À la montagne",
+                {
+                    id: "foret",
+                    texte: "Dans les forêts denses où les arbres les protègent des prédateurs, comme les cerfs",
+                },
+                {
+                    id: "savane",
+                    texte: "Dans les savanes aux herbes jaunes où ils peuvent courir, comme les lions",
+                },
+                {
+                    id: "montagne",
+                    texte: "En haute montagne où l'air est frais, comme les bouquetins aux cornes imposantes",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Bébé grandit dans le ventre (presque tous)",
-                "Maman allaite ses petits (donne du lait)",
-                "Parents s'occupent bien des petits",
+                {
+                    id: "ventre",
+                    texte: "Le bébé se développe dans le ventre de la mère pendant plusieurs mois avant de naître",
+                },
+                {
+                    id: "lait",
+                    texte: "Les mamans allaitent leurs petits avec du lait nutritif pendant leurs premiers mois",
+                },
+                {
+                    id: "soin",
+                    texte: "Les parents protègent leurs petits jusqu'à ce qu'ils soient autonomes",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Herbe et feuilles (vache, cerf)",
-                "Viande (lion, loup)",
-                "Un peu de tout (ours, humain)",
+                {
+                    id: "herbe",
+                    texte: "Des végétaux : herbe pour les vaches, feuilles pour les girafes",
+                },
+                {
+                    id: "viande",
+                    texte: "D'autres animaux chassés : gazelles pour les guépards, poissons pour les ours",
+                },
+                {
+                    id: "omnivore",
+                    texte: "De tout : plantes, fruits, insectes et petits animaux, comme les sangliers",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Poils pour rester au chaud",
-                "Oreilles qui bougent pour bien entendre",
-                "Dents différentes pour tout manger",
+                {
+                    id: "poils",
+                    texte: "Leur fourrure les isole du froid et des blessures grâce à des poils épais",
+                },
+                {
+                    id: "oreilles",
+                    texte: "Leurs oreilles mobiles captent les sons les plus faibles autour d'eux",
+                },
+                {
+                    id: "dents",
+                    texte: "Leurs dents spécialisées broient herbes, viandes ou noix avec précision",
+                },
             ],
         },
         Oiseaux: {
             "Où vivent-ils ?": [
-                "Dans les arbres tropicaux",
-                "Au bord de la mer",
-                "Dans le grand froid (toundra)",
+                {
+                    id: "arbres",
+                    texte: "Dans la canopée des forêts tropicales, comme les perroquets colorés",
+                },
+                {
+                    id: "mer",
+                    texte: "Sur les côtes rocheuses où ils plongent pour pêcher, comme les mouettes",
+                },
+                {
+                    id: "toundra",
+                    texte: "Dans la toundra glaciale où ils nichent au sol, comme les lagopèdes",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Pondent des œufs avec une coquille dure",
-                "Papa et maman couvent les œufs",
-                "Construisent des nids",
+                {
+                    id: "oeufs",
+                    texte: "Ils pondent des œufs à coquille dure dans des nids bien cachés",
+                },
+                {
+                    id: "couvaison",
+                    texte: "Les parents couvent les œufs à tour de rôle pour les garder au chaud",
+                },
+                {
+                    id: "nid",
+                    texte: "Ils bâtissent des nids avec brindilles, plumes et mousse, comme le rouge-gorge",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Graines (moineau)",
-                "Poissons (aigle pêcheur)",
-                "Nectar des fleurs (colibri)",
+                {
+                    id: "graines",
+                    texte: "Des graines picorées au sol ou dans les plantes, comme les moineaux",
+                },
+                {
+                    id: "poissons",
+                    texte: "Des poissons attrapés en plongeant rapidement, comme les sternes",
+                },
+                {
+                    id: "nectar",
+                    texte: "Du nectar puisé dans les fleurs avec leur long bec, comme les colibris",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Plumes pour voler",
-                "Os légers (creux)",
-                "Bec dur sans dents",
+                {
+                    id: "plumes",
+                    texte: "Leurs plumes légères et aérodynamiques permettent un vol précis",
+                },
+                {
+                    id: "os",
+                    texte: "Leurs os creux et légers allègent leur corps pour mieux voler",
+                },
+                {
+                    id: "bec",
+                    texte: "Leur bec adapté à leur régime : crochu pour déchirer, fin pour picorer",
+                },
             ],
         },
         Reptiles: {
             "Où vivent-ils ?": [
-                "Dans le désert chaud",
-                "Dans les mangroves (forêt humide)",
-                "Sur les rochers au soleil",
+                {
+                    id: "desert",
+                    texte: "Dans les déserts arides où ils résistent à la chaleur, comme les geckos",
+                },
+                {
+                    id: "mangrove",
+                    texte: "Dans les zones humides comme les mangroves, habitat des crocodiles",
+                },
+                {
+                    id: "rochers",
+                    texte: "Sur les rochers chauffés par le soleil où ils digèrent, comme les lézards",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Pondent des œufs sur la terre",
-                "Bébé se développe tout seul dans l'œuf",
-                "Parents ne s'occupent pas des petits (souvent)",
+                {
+                    id: "oeufs-terre",
+                    texte: "Ils enterrent leurs œufs dans le sable chaud pour les faire éclore",
+                },
+                {
+                    id: "autonomie",
+                    texte: "Les bébés sortent seuls de l'œuf avec une dent spéciale pour casser la coquille",
+                },
+                {
+                    id: "sans-parents",
+                    texte: "Les petits doivent se débrouiller seuls après l'éclosion",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Insectes (lézard)",
-                "Autres animaux (serpent)",
-                "Plantes (tortue terrestre)",
+                {
+                    id: "insectes",
+                    texte: "Des insectes attrapés avec leur langue collante, comme les caméléons",
+                },
+                {
+                    id: "proies",
+                    texte: "Des proies entières avalées grâce à leur mâchoire extensible",
+                },
+                {
+                    id: "plantes",
+                    texte: "Des plantes riches en eau pour s'hydrater, comme les tortues terrestres",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Écailles protectrices",
-                "Ont besoin du soleil pour se réchauffer",
-                "Langue fourchue pour sentir (serpents, certains lézards)",
+                {
+                    id: "ecailles",
+                    texte: "Leur peau écailleuse les protège des blessures et de la déshydratation",
+                },
+                {
+                    id: "soleil",
+                    texte: "Ils régulent leur température en s'exposant au soleil ou à l'ombre",
+                },
+                {
+                    id: "langue",
+                    texte: "Leur langue fourchue capte les odeurs pour localiser leurs proies",
+                },
             ],
         },
         Amphibiens: {
             "Où vivent-ils ?": [
-                "Près des mares",
-                "Dans la forêt humide",
-                "Au bord des rivières calmes",
+                {
+                    id: "mare",
+                    texte: "Près des mares où ils pondent leurs œufs, comme les grenouilles vertes",
+                },
+                {
+                    id: "foret-humide",
+                    texte: "Dans les forêts humides où leur peau reste mouillée",
+                },
+                {
+                    id: "riviere",
+                    texte: "Le long des rivières à courant lent où les têtards grandissent",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Pondent des œufs mous dans l'eau (grappes)",
-                "Se transforment (têtard devient grenouille)",
-                "Respirent par la peau",
+                {
+                    id: "oeufs-eau",
+                    texte: "Ils pondent des grappes d'œufs gélatineux dans l'eau stagnante",
+                },
+                {
+                    id: "tetard",
+                    texte: "Les têtards respirent dans l'eau avant de devenir adultes terrestres",
+                },
+                {
+                    id: "respiration",
+                    texte: "Adultes : peau humide pour respirer. Têtards : branchies dans l'eau",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Insectes (adultes)",
-                "Plantes aquatiques (têtards)",
-                "Minuscules choses dans l'eau (larves)",
+                {
+                    id: "insectes-adultes",
+                    texte: "Des insectes attrapés avec leur langue collante ultra-rapide",
+                },
+                {
+                    id: "plantes-tetards",
+                    texte: "Des algues et débris végétaux quand ils sont têtards",
+                },
+                {
+                    id: "microbes",
+                    texte: "Des micro-organismes filtrés dans l'eau pendant leur phase larvaire",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Peau perméable (laisse passer l'eau)",
-                "Gros yeux qui voient bien",
-                "Doigts collants pour grimper (certaines grenouilles)",
+                {
+                    id: "peau",
+                    texte: "Leur peau perméable absorbe l'eau et l'oxygène sans boire",
+                },
+                {
+                    id: "yeux",
+                    texte: "Leurs yeux globuleux voient dans toutes les directions pour surveiller",
+                },
+                {
+                    id: "doigts",
+                    texte: "Leurs doigts collants leur permettent de grimper aux surfaces verticales",
+                },
             ],
         },
         Poissons: {
             "Où vivent-ils ?": [
-                "Près des coraux colorés",
-                "Tout au fond de l'océan",
-                "Dans les fleuves chauds",
+                {
+                    id: "corail",
+                    texte: "Dans les récifs coralliens colorés, comme le poisson-clown et son anémone",
+                },
+                {
+                    id: "profondeur",
+                    texte: "Dans les abysses obscures où certains produisent leur propre lumière",
+                },
+                {
+                    id: "fleuve",
+                    texte: "Dans les fleuves à courant rapide où ils remontent le courant, comme les saumons",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Œufs et 'graines' se rencontrent dans l'eau",
-                "Pondent beaucoup d'œufs",
-                "Parents ne s'occupent pas des petits (souvent)",
+                {
+                    id: "rencontre",
+                    texte: "La femelle pond des œufs que le mâle féconde ensuite dans l'eau",
+                },
+                {
+                    id: "nombreux",
+                    texte: "Ils pondent des milliers d'œufs car peu survivront jusqu'à l'âge adulte",
+                },
+                {
+                    id: "independance",
+                    texte: "Les alevins doivent se nourrir seuls dès la naissance",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Plancton (tout petit)",
-                "Autres poissons",
-                "Restes au fond de l'eau",
+                {
+                    id: "plancton",
+                    texte: "Du plancton filtré grâce à leurs branchies spécialisées",
+                },
+                {
+                    id: "poissons",
+                    texte: "D'autres poissons chassés en bancs organisés",
+                },
+                {
+                    id: "debris",
+                    texte: "Des restes organiques trouvés sur le fond marin",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Ligne sur le côté pour sentir les mouvements",
-                "Ballon interne pour flotter (vessie natatoire)",
-                "Queue puissante pour nager",
+                {
+                    id: "ligne",
+                    texte: "Leur ligne latérale détecte les vibrations et mouvements dans l'eau",
+                },
+                {
+                    id: "vessie",
+                    texte: "Leur vessie natatoire est une poche d'air pour flotter à la bonne profondeur",
+                },
+                {
+                    id: "nageoire",
+                    texte: "Leur queue puissante propulse leur corps dans l'eau avec précision",
+                },
             ],
         },
         Insectes: {
             "Où vivent-ils ?": [
-                "Dans les arbres tropicaux",
-                "Sous les feuilles mortes",
-                "Dans l'eau douce",
+                {
+                    id: "canopee",
+                    texte: "Dans la canopée des forêts tropicales où ils butinent les fleurs",
+                },
+                {
+                    id: "litiere",
+                    texte: "Sous les feuilles mortes où ils recyclent la matière organique",
+                },
+                {
+                    id: "eau-douce",
+                    texte: "Dans les mares où les larves se développent avant de devenir adultes",
+                },
             ],
             "Comment font-ils des bébés ?": [
-                "Se transforment complètement (chenille > papillon)",
-                "Maman pond sans papa (parfois)",
-                "Parents s'occupent rarement des petits (sauf abeilles, fourmis)",
+                {
+                    id: "metamorphose",
+                    texte: "De la chenille au papillon : transformation complète en chrysalide",
+                },
+                {
+                    id: "parthenogenese",
+                    texte: "Certaines femelles pondent des œufs sans mâle, comme les pucerons",
+                },
+                {
+                    id: "colonies",
+                    texte: "Dans les sociétés organisées, les ouvrières élèvent les petits",
+                },
             ],
             "Qu'est-ce qu'ils mangent ?": [
-                "Feuilles et plantes (puceron)",
-                "Autres insectes (mante religieuse)",
-                "Pollen des fleurs (abeille)",
+                {
+                    id: "feuilles",
+                    texte: "Des feuilles découpées avec leurs mandibules puissantes",
+                },
+                {
+                    id: "proies-insectes",
+                    texte: "D'autres insectes capturés vivants avec leurs pattes préhensiles",
+                },
+                {
+                    id: "pollen",
+                    texte: "Du pollen récolté et transformé en miel dans la ruche",
+                },
             ],
             "Leurs super-pouvoirs !": [
-                "Carapace externe (exosquelette)",
-                "Antennes pour sentir et toucher",
-                "Ailes fines pour voler (souvent)",
+                {
+                    id: "exosquelette",
+                    texte: "Leur carapace externe rigide les protège comme une armure",
+                },
+                {
+                    id: "antennes",
+                    texte: "Leurs antennes détectent odeurs, vibrations et contacts",
+                },
+                {
+                    id: "ailes",
+                    texte: "Leurs ailes membraneuses battent jusqu'à 1000 fois par seconde",
+                },
             ],
         },
     },
+
     metadata: {
-        niveau: "Cycle 2 / Cycle 3 (Primaire)",
+        niveau: "Cycle 2 / Cycle 3 (CE2-CM1-CM2)",
         objectifs: [
-            "Reconnaître les grandes familles d'animaux",
-            "Savoir où vivent et ce que mangent différents animaux",
-            "Comprendre comment les animaux sont adaptés à leur milieu",
-            "Apprendre à classer comme un petit scientifique !",
-            "Découvrir des exemples d'animaux pour chaque famille",
+            "Reconnaître les principales familles d'animaux et leurs caractéristiques",
+            "Comprendre comment les animaux sont adaptés à leur environnement",
+            "Découvrir les bases de la classification du vivant",
+            "Apprendre le vocabulaire scientifique adapté au cycle 3",
+            "Développer la curiosité pour la biodiversité",
         ],
         regles: [
-            // ... (Les règles restent identiques)
             {
                 nom: "Trio Gagnant",
                 description:
@@ -203,7 +418,6 @@ const dataClassificationVivant = new DataJeu({
             },
         ],
         colors: {
-            // ... (Les couleurs restent identiques)
             famille: "#FFFDE7",
             Mammifères: "#A1887F",
             Oiseaux: "#90CAF9",
@@ -217,7 +431,6 @@ const dataClassificationVivant = new DataJeu({
             "Leurs super-pouvoirs !": "#E3F2FD",
         },
         images: {
-            // ... (La structure des images reste identique)
             families: {
                 Mammifères: "classification-vivant/families/mammiferes.jpg",
                 Oiseaux: "classification-vivant/families/oiseaux.jpg",
@@ -237,252 +450,215 @@ const dataClassificationVivant = new DataJeu({
                     "classification-vivant/properties/adaptation_icone.png",
             },
             values: {
-                // Chemins hypothétiques pour les images des valeurs spécifiques
                 Mammifères: {
                     "Où vivent-ils ?": {
-                        "Dans la forêt":
-                            "classification-vivant/values/mammiferes/habitat/foret.jpg",
-                        "Dans la savane (herbes hautes)":
-                            "classification-vivant/values/mammiferes/habitat/savane.jpg",
-                        "À la montagne":
+                        foret: "classification-vivant/values/mammiferes/habitat/foret.jpg",
+                        savane: "classification-vivant/values/mammiferes/habitat/savane.jpg",
+                        montagne:
                             "classification-vivant/values/mammiferes/habitat/montagne.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Bébé grandit dans le ventre (presque tous)":
-                            "classification-vivant/values/mammiferes/reproduction/ventre.jpg",
-                        "Maman allaite ses petits (donne du lait)":
-                            "classification-vivant/values/mammiferes/reproduction/allaitement.jpg",
-                        "Parents s'occupent bien des petits":
-                            "classification-vivant/values/mammiferes/reproduction/soutien.jpg",
+                        ventre: "classification-vivant/values/mammiferes/reproduction/ventre.jpg",
+                        lait: "classification-vivant/values/mammiferes/reproduction/allaitement.jpg",
+                        soin: "classification-vivant/values/mammiferes/reproduction/soutien.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Poils pour rester au chaud":
-                            "classification-vivant/values/mammiferes/adaptation/poils.jpg",
-                        "Oreilles qui bougent pour bien entendre":
+                        poils: "classification-vivant/values/mammiferes/adaptation/poils.jpg",
+                        oreilles:
                             "classification-vivant/values/mammiferes/adaptation/oreilles.jpg",
-                        "Dents différentes pour tout manger":
-                            "classification-vivant/values/mammiferes/adaptation/dents.jpg",
+                        dents: "classification-vivant/values/mammiferes/adaptation/dents.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Herbe et feuilles (vache, cerf)":
-                            "classification-vivant/values/mammiferes/alimentation/herbe.jpg",
-                        "Viande (lion, loup)":
-                            "classification-vivant/values/mammiferes/alimentation/carnivore.jpg",
-                        "Un peu de tout (ours, humain)":
+                        herbe: "classification-vivant/values/mammiferes/alimentation/herbe.jpg",
+                        viande: "classification-vivant/values/mammiferes/alimentation/carnivore.jpg",
+                        omnivore:
                             "classification-vivant/values/mammiferes/alimentation/omnivore.jpg",
                     },
                 },
                 Oiseaux: {
                     "Où vivent-ils ?": {
-                        "Dans les arbres tropicaux":
-                            "classification-vivant/values/oiseaux/habitat/arbres-tropicaux.jpg",
-                        "Au bord de la mer":
-                            "classification-vivant/values/oiseaux/habitat/mer.jpg",
-                        "Dans le grand froid (toundra)":
+                        arbres: "classification-vivant/values/oiseaux/habitat/arbres-tropicaux.jpg",
+                        mer: "classification-vivant/values/oiseaux/habitat/mer.jpg",
+                        toundra:
                             "classification-vivant/values/oiseaux/habitat/toundra.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Pondent des œufs avec une coquille dure":
-                            "classification-vivant/values/oiseaux/reproduction/ponte.jpg",
-                        "Papa et maman couvent les œufs":
+                        oeufs: "classification-vivant/values/oiseaux/reproduction/ponte.jpg",
+                        couvaison:
                             "classification-vivant/values/oiseaux/reproduction/couvaison.jpg",
-                        "Construisent des nids":
-                            "classification-vivant/values/oiseaux/reproduction/nidification.jpg",
+                        nid: "classification-vivant/values/oiseaux/reproduction/nidification.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Graines (moineau)":
+                        graines:
                             "classification-vivant/values/oiseaux/alimentation/granivore.jpg",
-                        "Poissons (aigle pêcheur)":
+                        poissons:
                             "classification-vivant/values/oiseaux/alimentation/piscivore.jpg",
-                        "Nectar des fleurs (colibri)":
-                            "classification-vivant/values/oiseaux/alimentation/nectar.jpg",
+                        nectar: "classification-vivant/values/oiseaux/alimentation/nectar.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Plumes pour voler":
-                            "classification-vivant/values/oiseaux/adaptation/plumes.jpg",
-                        "Os légers (creux)":
-                            "classification-vivant/values/oiseaux/adaptation/os.jpg",
-                        "Bec dur sans dents":
-                            "classification-vivant/values/oiseaux/adaptation/bec.jpg",
+                        plumes: "classification-vivant/values/oiseaux/adaptation/plumes.jpg",
+                        os: "classification-vivant/values/oiseaux/adaptation/os.jpg",
+                        bec: "classification-vivant/values/oiseaux/adaptation/bec.jpg",
                     },
                 },
                 Reptiles: {
                     "Où vivent-ils ?": {
-                        "Dans le désert chaud":
-                            "classification-vivant/values/reptiles/habitat/desert.jpg",
-                        "Dans les mangroves (forêt humide)":
+                        desert: "classification-vivant/values/reptiles/habitat/desert.jpg",
+                        mangrove:
                             "classification-vivant/values/reptiles/habitat/mangrove.jpg",
-                        "Sur les rochers au soleil":
+                        rochers:
                             "classification-vivant/values/reptiles/habitat/rochers.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Pondent des œufs sur la terre":
+                        "oeufs-terre":
                             "classification-vivant/values/reptiles/reproduction/ponte.jpg",
-                        "Bébé se développe tout seul dans l'œuf":
+                        autonomie:
                             "classification-vivant/values/reptiles/reproduction/eclosion.jpg",
-                        "Parents ne s'occupent pas des petits (souvent)":
+                        "sans-parents":
                             "classification-vivant/values/reptiles/reproduction/parents.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Insectes (lézard)":
+                        insectes:
                             "classification-vivant/values/reptiles/alimentation/insectivore.jpg",
-                        "Autres animaux (serpent)":
-                            "classification-vivant/values/reptiles/alimentation/carnivore.jpg",
-                        "Plantes (tortue terrestre)":
+                        proies: "classification-vivant/values/reptiles/alimentation/carnivore.jpg",
+                        plantes:
                             "classification-vivant/values/reptiles/alimentation/herbivore.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Écailles protectrices":
+                        ecailles:
                             "classification-vivant/values/reptiles/adaptation/ecailles.jpg",
-                        "Ont besoin du soleil pour se réchauffer":
-                            "classification-vivant/values/reptiles/adaptation/soleil.jpg",
-                        "Langue fourchue pour sentir (serpents, certains lézards)":
-                            "classification-vivant/values/reptiles/adaptation/langue.jpg",
+                        soleil: "classification-vivant/values/reptiles/adaptation/soleil.jpg",
+                        langue: "classification-vivant/values/reptiles/adaptation/langue.jpg",
                     },
                 },
                 Amphibiens: {
                     "Où vivent-ils ?": {
-                        "Près des mares":
-                            "classification-vivant/values/amphibiens/habitat/mare.jpg",
-                        "Dans la forêt humide":
+                        mare: "classification-vivant/values/amphibiens/habitat/mare.jpg",
+                        "foret-humide":
                             "classification-vivant/values/amphibiens/habitat/foret.jpg",
-                        "Au bord des rivières calmes":
+                        riviere:
                             "classification-vivant/values/amphibiens/habitat/riviere.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Se transforment (têtard devient grenouille)":
-                            "classification-vivant/values/amphibiens/reproduction/tetard.jpg",
-                        "Respirent par la peau":
+                        tetard: "classification-vivant/values/amphibiens/reproduction/tetard.jpg",
+                        respiration:
                             "classification-vivant/values/amphibiens/reproduction/respiration.jpg",
-                        "Pondent des œufs mous dans l'eau (grappes)":
+                        "oeufs-eau":
                             "classification-vivant/values/amphibiens/reproduction/grappe.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Insectes (adultes)":
+                        "insectes-adultes":
                             "classification-vivant/values/amphibiens/alimentation/insectivore.jpg",
-                        "Plantes aquatiques (têtards)":
+                        "plantes-tetards":
                             "classification-vivant/values/amphibiens/alimentation/herbivore.jpg",
-                        "Minuscules choses dans l'eau (larves)":
+                        microbes:
                             "classification-vivant/values/amphibiens/alimentation/larve.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Peau perméable (laisse passer l'eau)":
-                            "classification-vivant/values/amphibiens/adaptation/permeable.jpg",
-                        "Gros yeux qui voient bien":
-                            "classification-vivant/values/amphibiens/adaptation/gros-yeux.jpg",
-                        "Doigts collants pour grimper (certaines grenouilles)":
-                            "classification-vivant/values/amphibiens/adaptation/gluant.jpg",
+                        peau: "classification-vivant/values/amphibiens/adaptation/permeable.jpg",
+                        yeux: "classification-vivant/values/amphibiens/adaptation/gros-yeux.jpg",
+                        doigts: "classification-vivant/values/amphibiens/adaptation/gluant.jpg",
                     },
                 },
                 Poissons: {
                     "Où vivent-ils ?": {
-                        "Près des coraux colorés":
-                            "classification-vivant/values/poissons/habitat/coraux.jpg",
-                        "Tout au fond de l'océan":
+                        corail: "classification-vivant/values/poissons/habitat/coraux.jpg",
+                        profondeur:
                             "classification-vivant/values/poissons/habitat/ocean.jpg",
-                        "Dans les fleuves chauds":
-                            "classification-vivant/values/poissons/habitat/fleuve.jpg",
+                        fleuve: "classification-vivant/values/poissons/habitat/fleuve.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Œufs et 'graines' se rencontrent dans l'eau":
+                        rencontre:
                             "classification-vivant/values/poissons/reproduction/rencontre-oeufs-graines.jpg",
-                        "Pondent beaucoup d'œufs":
+                        nombreux:
                             "classification-vivant/values/poissons/reproduction/beaucoup-oeufs.jpg",
-                        "Parents ne s'occupent pas des petits (souvent)":
+                        independance:
                             "classification-vivant/values/poissons/reproduction/autonomie.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Plancton (tout petit)":
+                        plancton:
                             "classification-vivant/values/poissons/alimentation/plancton.jpg",
-                        "Autres poissons":
+                        poissons:
                             "classification-vivant/values/poissons/alimentation/poissons.jpg",
-                        "Restes au fond de l'eau":
-                            "classification-vivant/values/poissons/alimentation/restes.jpg",
+                        debris: "classification-vivant/values/poissons/alimentation/restes.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Queue puissante pour nager":
+                        nageoire:
                             "classification-vivant/values/poissons/adaptation/nageoire.jpg",
-                        "Ligne sur le côté pour sentir les mouvements":
-                            "classification-vivant/values/poissons/adaptation/ligne.jpg",
-                        "Ballon interne pour flotter (vessie natatoire)":
-                            "classification-vivant/values/poissons/adaptation/ballon.jpg",
+                        ligne: "classification-vivant/values/poissons/adaptation/ligne.jpg",
+                        vessie: "classification-vivant/values/poissons/adaptation/ballon.jpg",
                     },
                 },
                 Insectes: {
                     "Où vivent-ils ?": {
-                        "Dans les arbres tropicaux":
+                        canopee:
                             "classification-vivant/values/insectes/habitat/arbres-tropicaux.jpg",
-                        "Sous les feuilles mortes":
+                        litiere:
                             "classification-vivant/values/insectes/habitat/feuilles-mortes.jpg",
-                        "Dans l'eau douce":
+                        "eau-douce":
                             "classification-vivant/values/insectes/habitat/eau-douce.jpg",
                     },
                     "Comment font-ils des bébés ?": {
-                        "Se transforment complètement (chenille > papillon)":
+                        metamorphose:
                             "classification-vivant/values/insectes/reproduction/transformation.jpg",
-                        "Maman pond sans papa (parfois)":
+                        parthenogenese:
                             "classification-vivant/values/insectes/reproduction/ponte.jpg",
-                        "Parents s'occupent rarement des petits (sauf abeilles, fourmis)":
+                        colonies:
                             "classification-vivant/values/insectes/reproduction/autonomie.jpg",
                     },
                     "Qu'est-ce qu'ils mangent ?": {
-                        "Feuilles et plantes (puceron)":
+                        feuilles:
                             "classification-vivant/values/insectes/alimentation/herbivore.jpg",
-                        "Autres insectes (mante religieuse)":
+                        "proies-insectes":
                             "classification-vivant/values/insectes/alimentation/insectivore.jpg",
-                        "Pollen des fleurs (abeille)":
-                            "classification-vivant/values/insectes/alimentation/pollen.jpg",
+                        pollen: "classification-vivant/values/insectes/alimentation/pollen.jpg",
                     },
                     "Leurs super-pouvoirs !": {
-                        "Carapace externe (exosquelette)":
+                        exosquelette:
                             "classification-vivant/values/insectes/adaptation/carapace.jpg",
-                        "Antennes pour sentir et toucher":
+                        antennes:
                             "classification-vivant/values/insectes/adaptation/antennes.jpg",
-                        "Ailes fines pour voler (souvent)":
-                            "classification-vivant/values/insectes/adaptation/ailes.jpg",
+                        ailes: "classification-vivant/values/insectes/adaptation/ailes.jpg",
                     },
                 },
-                // ... Ajouter d'autres images pertinentes si disponibles
             },
         },
-        // Modification ici : Ajout de chronologie.description
         chronologie: {
             Mammifères: {
                 description:
-                    "Nous sommes des mammifères ! Comme le chat, le chien, la vache, le lion. On a des poils, les mamans donnent du lait à leurs bébés. \n**Le savais-tu ?** La baleine bleue est le plus grand mammifère du monde !",
-                // On peut ajouter un ordre si on veut forcer un affichage, même si ce n'est pas strictement chronologique
+                    "Nous sommes des mammifères ! Comme le chat, le chien, la vache ou le lion. On a des poils, et les mamans donnent du lait à leurs bébés. Le savais-tu ? La baleine bleue est le plus grand mammifère du monde !",
                 ordre: 1,
             },
             Oiseaux: {
                 description:
-                    "Les oiseaux ont des plumes, un bec et la plupart peuvent voler ! Pense au moineau, à l'aigle ou au perroquet. \n**Le savais-tu ?** Le colibri peut battre des ailes jusqu'à 80 fois par seconde !",
+                    "Les oiseaux ont des plumes, un bec et la plupart peuvent voler ! Pense au moineau, à l'aigle ou au perroquet. Le savais-tu ? Le colibri peut battre des ailes jusqu'à 80 fois par seconde !",
                 ordre: 2,
             },
             Reptiles: {
                 description:
-                    "Les reptiles ont des écailles et ont besoin de soleil pour se réchauffer. C'est la famille du serpent, du lézard et de la tortue. \n**Le savais-tu ?** Certains reptiles, comme le caméléon, peuvent changer de couleur !",
+                    "Les reptiles ont des écailles et ont besoin du soleil pour se réchauffer. C'est la famille du serpent, du lézard et de la tortue. Le savais-tu ? Certains reptiles, comme le caméléon, peuvent changer de couleur !",
                 ordre: 3,
             },
             Amphibiens: {
                 description:
-                    "Les amphibiens commencent leur vie dans l'eau (comme les têtards) puis vivent sur terre. Ils ont la peau humide. Pense à la grenouille ou au crapaud. \n**Le savais-tu ?** Les amphibiens peuvent respirer par la peau !",
+                    "Les amphibiens commencent leur vie dans l'eau (comme les têtards) puis vivent sur terre. Ils ont la peau humide. Pense à la grenouille ou au crapaud. Le savais-tu ? Les amphibiens peuvent respirer par la peau !",
                 ordre: 4,
             },
             Poissons: {
                 description:
-                    "Les poissons vivent dans l'eau, respirent avec des branchies et nagent avec des nageoires. Comme le poisson rouge ou le requin ! \n**Le savais-tu ?** Il y a plus de 30 000 espèces de poissons différentes !",
+                    "Les poissons vivent dans l'eau, respirent avec des branchies et nagent avec des nageoires. Comme le poisson rouge ou le requin ! Le savais-tu ? Il existe plus de 30 000 espèces de poissons différentes !",
                 ordre: 5,
             },
             Insectes: {
                 description:
-                    "Les insectes ont 6 pattes et un corps en 3 parties (tête, thorax, abdomen). C'est la famille de la fourmi, du papillon, de la coccinelle. \n**Le savais-tu ?** Les insectes sont le groupe d'animaux le plus nombreux sur Terre !",
+                    "Les insectes ont 6 pattes et un corps en 3 parties (tête, thorax, abdomen). C'est la famille de la fourmi, du papillon, de la coccinelle. Le savais-tu ? Les insectes sont les animaux les plus nombreux sur Terre !",
                 ordre: 6,
             },
         },
-        contextes: {}, // Laissé vide car l'info est maintenant dans chronologie
+        contextes: {},
         aiImageCredit:
             "Les illustrations utilisées dans ce jeu ont été générées par Microsoft Copilot. Ces images sont utilisées à des fins pédagogiques uniquement.",
     },
-}); // Fin de l'instanciation de DataJeu
+});
 
 export default dataClassificationVivant;
