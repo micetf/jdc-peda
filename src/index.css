@@ -8,11 +8,11 @@
     }
 
     .btn-primary {
-        @apply bg-primary text-white hover:bg-primary/80;
+        @apply bg-primary-600 text-white hover:bg-primary-700;
     }
 
     .btn-secondary {
-        @apply bg-secondary text-gray-800 hover:bg-secondary/80;
+        @apply bg-secondary-500 text-gray-800 hover:bg-secondary-600;
     }
 
     .card {
