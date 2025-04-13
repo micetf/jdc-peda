@@ -494,6 +494,8 @@ const dataHistory = new DataJeu({
             "Époque contemporaine":
                 "Période de profonds bouleversements technologiques, politiques et sociaux, marquée par l'industrialisation, la mondialisation et les conflits mondiaux.",
         },
+        aiImageCredit:
+            "Images des périodes historiques générées par Flux AI via Perplexity.ai. Images de l'habitat, architecture, inventions, découvertes, vie quotidienne et personnages générées par Mistral AI via Perplexity.ai",
     },
 });
 
