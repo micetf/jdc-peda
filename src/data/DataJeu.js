@@ -1,31 +1,6 @@
 // src/data/DataJeu.js
 import { getImageUrl } from "@utils/imageUtils";
 
-function logImagePaths() {
-    console.group("Débogage des chemins d'images");
-
-    // Examiner d'où vient le problème
-    console.log("BASE_URL:", import.meta.env.BASE_URL);
-    console.log("Mode:", import.meta.env.MODE);
-    console.log("DEV:", import.meta.env.DEV);
-    console.log("PROD:", import.meta.env.PROD);
-
-    // Tracer quelques chemins pour voir la transformation
-    const testPaths = [
-        "assets/test.jpg",
-        "/assets/test.jpg",
-        "jdc-peda/assets/test.jpg",
-        "/jdc-peda/assets/test.jpg",
-        "assets/illustrations/history/values/epoque-contemporaine/vie/cinema.jpg",
-    ];
-
-    testPaths.forEach((path) => {
-        const result = getImageUrl(path);
-        console.log(`${path} => ${result}`);
-    });
-
-    console.groupEnd();
-}
 /**
  * Classe représentant un jeu de cartes pédagogique
  */
@@ -74,7 +49,7 @@ class DataJeu {
             objectifs: options.metadata.objectifs || [],
             regles: options.metadata.regles || [],
             colors: options.metadata.colors || {},
-            // Modification ici : Initialisation de la structure complète pour les images
+            // Initialisation de la structure complète pour les images
             images: {
                 families:
                     (options.metadata.images &&
@@ -84,7 +59,7 @@ class DataJeu {
                     (options.metadata.images &&
                         options.metadata.images.properties) ||
                     {},
-                // Ajout de la structure pour les images spécifiques aux valeurs
+                // Structure pour les images spécifiques aux valeurs
                 values:
                     (options.metadata.images &&
                         options.metadata.images.values) ||
@@ -92,13 +67,12 @@ class DataJeu {
             },
             chronologie: options.metadata.chronologie || {},
             contextes: options.metadata.contextes || {},
-            // Nouvelle propriété pour le crédit des images générées par IA
+            // Crédit des images générées par IA
             aiImageCredit: options.metadata.aiImageCredit || null,
         };
 
         // Validation de la structure des valeurs
         this.validateValeurs();
-        logImagePaths();
     }
 
     /**
@@ -138,15 +112,15 @@ class DataJeu {
     getValeurs(famille, propriete) {
         if (!this.familles.includes(famille)) {
             console.error(`Famille "${famille}" non trouvée dans le jeu.`);
-            return []; // Retourne un tableau vide au lieu de lancer une erreur pour la flexibilité
+            return [];
         }
 
         if (!this.proprietes.includes(propriete)) {
             console.error(`Propriété "${propriete}" non trouvée dans le jeu.`);
-            return []; // Retourne un tableau vide
+            return [];
         }
 
-        return this.valeurs[famille]?.[propriete] || []; // Utilise optional chaining pour plus de sécurité
+        return this.valeurs[famille]?.[propriete] || [];
     }
 
     /**
@@ -180,8 +154,6 @@ class DataJeu {
         const valuesImages = imagesMeta.values || {};
         const propertiesImages = imagesMeta.properties || {};
 
-        const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
-
         // 1. Vérifier l'image de la valeur spécifique (priorité la plus haute)
         if (
             valeur &&
@@ -191,32 +163,19 @@ class DataJeu {
             valuesImages[famille][propriete] &&
             valuesImages[famille][propriete][valeur?.id || valeur]
         ) {
-            const relativePath = `${ILLUSTRATIONS_BASE_PATH}/${valuesImages[famille][propriete][valeur?.id || valeur]}`;
+            const relativePath =
+                valuesImages[famille][propriete][valeur?.id || valeur];
             return getImageUrl(relativePath);
         }
 
         // 2. Vérifier l'image de la propriété (priorité moyenne)
         if (propriete && propertiesImages[propriete]) {
-            const relativePath = `${ILLUSTRATIONS_BASE_PATH}/${propertiesImages[propriete]}`;
+            const relativePath = propertiesImages[propriete];
             return getImageUrl(relativePath);
         }
 
-        // 3. Aucune image spécifique trouvée pour valeur ou propriété
+        // 3. Aucune image spécifique trouvée
         return null;
-    }
-
-    /**
-     * Obtient le chemin de l'image d'une famille (pour la carte famille).
-     * @param {string} famille - Nom de la famille
-     * @returns {string|null} Chemin de l'image ou null si non disponible
-     * @deprecated Utiliser `this.metadata.images.families[famille]` directement si besoin ou ajuster la logique de carte famille.
-     */
-    getImageFamille(famille) {
-        console.warn("getImageFamille est dépréciée.");
-        const imagePath = this.metadata.images.families[famille];
-        if (!imagePath) return null;
-
-        return getImageUrl(`/assets/illustrations/${imagePath}`);
     }
 
     /**
@@ -278,7 +237,7 @@ class DataJeu {
                 chronoB &&
                 chronoB.debut !== undefined
             ) {
-                // Gestion simple pour année numérique ou chaîne 'YYYY' ou '-YYYY' (av. J.-C.)
+                // Gestion pour année numérique ou chaîne 'YYYY' ou '-YYYY' (av. J.-C.)
                 const debutA = parseInt(String(chronoA.debut).trim(), 10);
                 const debutB = parseInt(String(chronoB.debut).trim(), 10);
                 if (!isNaN(debutA) && !isNaN(debutB)) {
@@ -305,7 +264,6 @@ class DataJeu {
     getCards(filter = "tout") {
         const cards = [];
         const famillesTriees = this.getFamillesTriees(); // Utiliser les familles triées
-        const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
 
         // Cartes de familles
         if (filter === "tout" || filter === "famille") {
@@ -313,10 +271,7 @@ class DataJeu {
                 const color = this.getColor("famille", famille);
                 // Pour une carte famille, on prend l'image définie pour la famille
                 const familyImage = this.metadata.images.families[famille];
-                const imagePath = familyImage
-                    ? `${ILLUSTRATIONS_BASE_PATH}/${familyImage}`
-                    : null;
-                const image = imagePath ? getImageUrl(imagePath) : null;
+                const image = familyImage ? getImageUrl(familyImage) : null;
 
                 cards.push({
                     id: `famille-${famille}`,
@@ -338,7 +293,7 @@ class DataJeu {
                     const color = this.getColor("valeur", propriete); // Couleur basée sur la propriété pour les cartes valeur
 
                     valeurs.forEach((valeur) => {
-                        // Utilisation de la nouvelle méthode pour obtenir l'image prioritaire
+                        // Utilisation de la méthode pour obtenir l'image prioritaire
                         const image = this.getImagePourCarte(
                             famille,
                             propriete,

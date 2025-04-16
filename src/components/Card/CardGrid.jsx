@@ -46,19 +46,13 @@ const CardGrid = ({ data, filter }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
             {cards.map((carte) => (
                 <Card
-                    key={carte.id} // Utilise l'ID fourni par getCards
+                    key={carte.id}
                     type={carte.type}
                     title={carte.title}
-                    content={carte.content} // Utilise le contenu fourni par getCards
-                    color={carte.color} // Utilise la couleur fournie par getCards
-                    image={
-                        carte.image
-                            ? import.meta.env.BASE_URL +
-                              carte.image.replace(/^\//, "")
-                            : null
-                    } // Passe le chemin de l'image fourni par getCards
-                    data={data} // Passe l'instance data si Card en a besoin (pour getFamilyDescription)
-                    // propertyName={carte.propertyName} // Supprimé : Card n'en a plus besoin
+                    content={carte.content}
+                    color={carte.color}
+                    image={carte.image}
+                    data={data}
                 />
             ))}
         </div>

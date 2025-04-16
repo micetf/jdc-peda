@@ -1,105 +1,42 @@
 // src/utils/imageUtils.js
 
 /**
- * Utilitaire pour gérer les chemins d'images des cartes
- */
-
-/**
  * Base path pour les images d'illustrations
- * Ce chemin fonctionne en développement et en production
+ * Ce chemin commence depuis la racine publique
  */
-const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
+export const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
 
 /**
  * Fonction utilitaire pour préfixer les chemins d'images avec le chemin de base correct
- * @param {string} path - Chemin relatif de l'image
+ * @param {string} relativePath - Chemin relatif de l'image (après illustrations/)
  * @returns {string} Chemin complet avec préfixe correct
  */
-export const getImageUrl = (path) => {
-    if (!path) return null;
+export const getImageUrl = (relativePath) => {
+    if (!relativePath) return null;
 
-    // 1. Normaliser le chemin en supprimant les slashes initiaux
-    const cleanPath = path.replace(/^\/+/, "");
-
-    // 2. Extraire le préfixe de base sans slashes (jdc-peda)
-    const basePath = import.meta.env.BASE_URL.replace(/^\/+/, "").replace(
-        /\/+$/,
-        ""
-    );
-
-    // 3. Vérifier si le chemin contient déjà le préfixe de base
-    const hasBasePath = basePath && cleanPath.startsWith(basePath + "/");
-
-    // 4. Construire l'URL finale
-    if (import.meta.env.DEV) {
-        // En développement, ajouter simplement un slash initial
-        return `/${cleanPath}`;
+    // Si le chemin commence déjà par un slash ou contient le chemin de base, on l'utilise tel quel
+    // Sinon on le préfixe avec le chemin de base
+    let fullPath;
+    if (
+        relativePath.startsWith("/") ||
+        relativePath.includes(ILLUSTRATIONS_BASE_PATH.replace(/^\//, ""))
+    ) {
+        fullPath = relativePath;
     } else {
-        // En production:
-        if (hasBasePath) {
-            // Si le chemin contient déjà le préfixe, juste ajouter un slash initial
-            return `/${cleanPath}`;
-        } else {
-            // Sinon, ajouter le préfixe
-            return `/${basePath}/${cleanPath}`;
-        }
-    }
-};
-
-/**
- * Chemin des images par défaut
- */
-const DEFAULT_IMAGES = {
-    families: getImageUrl(`${ILLUSTRATIONS_BASE_PATH}/default/families.jpg`),
-    properties: getImageUrl(
-        `${ILLUSTRATIONS_BASE_PATH}/default/properties.jpg`
-    ),
-};
-
-/**
- * Obtient le chemin d'une image de famille
- * @param {Object} data - Données du jeu
- * @param {string} familyName - Nom de la famille
- * @returns {string} Chemin de l'image
- */
-export const getFamilyImagePath = (data, familyName) => {
-    try {
-        if (data?.metadata?.images?.families?.[familyName]) {
-            return getImageUrl(
-                `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.families[familyName]}`
-            );
-        }
-    } catch (error) {
-        console.warn(
-            `Impossible de trouver l'image pour la famille ${familyName}`,
-            error
-        );
+        fullPath = `${ILLUSTRATIONS_BASE_PATH}/${relativePath}`;
     }
 
-    return DEFAULT_IMAGES.families;
-};
+    // Normaliser le chemin (supprime les slashes initiaux dupliqués)
+    const cleanPath = fullPath.startsWith("/") ? fullPath : `/${fullPath}`;
 
-/**
- * Obtient le chemin d'une image de propriété
- * @param {Object} data - Données du jeu
- * @param {string} propertyName - Nom de la propriété
- * @returns {string} Chemin de l'image
- */
-export const getPropertyImagePath = (data, propertyName) => {
-    try {
-        if (data?.metadata?.images?.properties?.[propertyName]) {
-            return getImageUrl(
-                `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.properties[propertyName]}`
-            );
-        }
-    } catch (error) {
-        console.warn(
-            `Impossible de trouver l'image pour la propriété ${propertyName}`,
-            error
-        );
-    }
+    // En développement, le chemin commence directement par /assets
+    // En production, il doit être préfixé par BASE_URL (ex: /jdc-peda/assets)
+    const basePath =
+        import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL;
 
-    return DEFAULT_IMAGES.properties;
+    // Construire le chemin final
+    // Si BASE_URL est '/', on évite la duplication de slash
+    return `${basePath}${cleanPath}`;
 };
 
 /**
@@ -112,15 +49,91 @@ export const imageExists = async (imagePath) => {
         const response = await fetch(imagePath, { method: "HEAD" });
         return response.ok;
     } catch (error) {
-        console.log(error);
+        console.warn(
+            `Erreur lors de la vérification de l'existence de l'image ${imagePath}:`,
+            error
+        );
         return false;
     }
 };
 
+/**
+ * Obtient le chemin d'une image de famille
+ * @param {Object} data - Données du jeu
+ * @param {string} familyName - Nom de la famille
+ * @returns {string|null} Chemin de l'image ou null si non disponible
+ */
+export const getFamilyImagePath = (data, familyName) => {
+    try {
+        if (data?.metadata?.images?.families?.[familyName]) {
+            const relativePath = data.metadata.images.families[familyName];
+            return getImageUrl(relativePath);
+        }
+    } catch (error) {
+        console.warn(
+            `Impossible de trouver l'image pour la famille ${familyName}:`,
+            error
+        );
+    }
+    return null;
+};
+
+/**
+ * Obtient le chemin d'une image de propriété
+ * @param {Object} data - Données du jeu
+ * @param {string} propertyName - Nom de la propriété
+ * @returns {string|null} Chemin de l'image ou null si non disponible
+ */
+export const getPropertyImagePath = (data, propertyName) => {
+    try {
+        if (data?.metadata?.images?.properties?.[propertyName]) {
+            const relativePath = data.metadata.images.properties[propertyName];
+            return getImageUrl(relativePath);
+        }
+    } catch (error) {
+        console.warn(
+            `Impossible de trouver l'image pour la propriété ${propertyName}:`,
+            error
+        );
+    }
+    return null;
+};
+
+/**
+ * Obtient le chemin d'une image de valeur spécifique
+ * @param {Object} data - Données du jeu
+ * @param {string} familyName - Nom de la famille
+ * @param {string} propertyName - Nom de la propriété
+ * @param {string|Object} value - Valeur ou objet avec id et texte
+ * @returns {string|null} Chemin de l'image ou null si non disponible
+ */
+export const getValueImagePath = (data, familyName, propertyName, value) => {
+    try {
+        const valueId = value?.id || value;
+        if (
+            data?.metadata?.images?.values?.[familyName]?.[propertyName]?.[
+                valueId
+            ]
+        ) {
+            const relativePath =
+                data.metadata.images.values[familyName][propertyName][valueId];
+            return getImageUrl(relativePath);
+        }
+    } catch (error) {
+        console.warn(
+            `Impossible de trouver l'image pour la valeur ${value?.id || value}:`,
+            error
+        );
+    }
+    return null;
+};
+
+// Exporter un objet par défaut pour faciliter l'import
 export default {
+    ILLUSTRATIONS_BASE_PATH,
+    getImageUrl,
+    imageExists,
     getFamilyImagePath,
     getPropertyImagePath,
-    imageExists,
-    DEFAULT_IMAGES,
-    getImageUrl,
+    getValueImagePath,
 };
