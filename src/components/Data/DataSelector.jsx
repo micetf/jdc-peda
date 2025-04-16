@@ -1,6 +1,6 @@
 import React from "react";
-import useData from "./useData"; // Import mis à jour
-import Select from "../UI/Select";
+import useData from "@components/Data/useData"; // Import mis à jour
+import Select from "@components/UI/Select";
 
 /**
  * Composant de sélection de data

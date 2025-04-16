@@ -1,7 +1,7 @@
 // src/components/Data/useData.js
 // Ce fichier contient UNIQUEMENT le hook personnalisé
 import { useContext } from "react";
-import DataContext from "./DataContext";
+import DataContext from "@components/Data/DataContext";
 
 /**
  * Hook personnalisé pour utiliser le contexte des data

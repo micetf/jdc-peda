@@ -2,9 +2,9 @@
 // Ce fichier contient UNIQUEMENT le composant Provider
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
-import { getAllData } from "../../data";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import DataContext from "./DataContext";
+import { getAllData } from "@data";
+import useLocalStorage from "@hooks/useLocalStorage";
+import DataContext from "@components/Data/DataContext";
 
 /**
  * Fournisseur du contexte des data

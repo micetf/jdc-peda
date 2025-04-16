@@ -1,11 +1,35 @@
 // src/data/DataJeu.js
+import { getImageUrl } from "@utils/imageUtils";
 
+function logImagePaths() {
+    console.group("Débogage des chemins d'images");
+
+    // Examiner d'où vient le problème
+    console.log("BASE_URL:", import.meta.env.BASE_URL);
+    console.log("Mode:", import.meta.env.MODE);
+    console.log("DEV:", import.meta.env.DEV);
+    console.log("PROD:", import.meta.env.PROD);
+
+    // Tracer quelques chemins pour voir la transformation
+    const testPaths = [
+        "assets/test.jpg",
+        "/assets/test.jpg",
+        "jdc-peda/assets/test.jpg",
+        "/jdc-peda/assets/test.jpg",
+        "assets/illustrations/history/values/epoque-contemporaine/vie/cinema.jpg",
+    ];
+
+    testPaths.forEach((path) => {
+        const result = getImageUrl(path);
+        console.log(`${path} => ${result}`);
+    });
+
+    console.groupEnd();
+}
 /**
  * Classe représentant un jeu de cartes pédagogique
  */
 class DataJeu {
-    // src/data/DataJeu.js - Extrait montrant les changements à apporter
-
     /**
      * Crée une nouvelle instance de jeu de cartes pédagogique
      * @param {Object} options - Options de configuration du jeu
@@ -74,6 +98,7 @@ class DataJeu {
 
         // Validation de la structure des valeurs
         this.validateValeurs();
+        logImagePaths();
     }
 
     /**
@@ -155,6 +180,9 @@ class DataJeu {
         const valuesImages = imagesMeta.values || {};
         const propertiesImages = imagesMeta.properties || {};
 
+        const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
+
+        // 1. Vérifier l'image de la valeur spécifique (priorité la plus haute)
         if (
             valeur &&
             famille &&
@@ -163,12 +191,14 @@ class DataJeu {
             valuesImages[famille][propriete] &&
             valuesImages[famille][propriete][valeur?.id || valeur]
         ) {
-            return valuesImages[famille][propriete][valeur?.id || valeur];
+            const relativePath = `${ILLUSTRATIONS_BASE_PATH}/${valuesImages[famille][propriete][valeur?.id || valeur]}`;
+            return getImageUrl(relativePath);
         }
 
         // 2. Vérifier l'image de la propriété (priorité moyenne)
         if (propriete && propertiesImages[propriete]) {
-            return propertiesImages[propriete];
+            const relativePath = `${ILLUSTRATIONS_BASE_PATH}/${propertiesImages[propriete]}`;
+            return getImageUrl(relativePath);
         }
 
         // 3. Aucune image spécifique trouvée pour valeur ou propriété
@@ -183,7 +213,10 @@ class DataJeu {
      */
     getImageFamille(famille) {
         console.warn("getImageFamille est dépréciée.");
-        return this.metadata.images.families[famille] || null;
+        const imagePath = this.metadata.images.families[famille];
+        if (!imagePath) return null;
+
+        return getImageUrl(`/assets/illustrations/${imagePath}`);
     }
 
     /**
@@ -272,14 +305,18 @@ class DataJeu {
     getCards(filter = "tout") {
         const cards = [];
         const famillesTriees = this.getFamillesTriees(); // Utiliser les familles triées
-        const root = "src/assets/illustrations/";
+        const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
+
         // Cartes de familles
         if (filter === "tout" || filter === "famille") {
             famillesTriees.forEach((famille) => {
                 const color = this.getColor("famille", famille);
                 // Pour une carte famille, on prend l'image définie pour la famille
                 const familyImage = this.metadata.images.families[famille];
-                const image = familyImage ? root + familyImage : null;
+                const imagePath = familyImage
+                    ? `${ILLUSTRATIONS_BASE_PATH}/${familyImage}`
+                    : null;
+                const image = imagePath ? getImageUrl(imagePath) : null;
 
                 cards.push({
                     id: `famille-${famille}`,
@@ -302,9 +339,12 @@ class DataJeu {
 
                     valeurs.forEach((valeur) => {
                         // Utilisation de la nouvelle méthode pour obtenir l'image prioritaire
-                        const image =
-                            root +
-                            this.getImagePourCarte(famille, propriete, valeur);
+                        const image = this.getImagePourCarte(
+                            famille,
+                            propriete,
+                            valeur
+                        );
+
                         cards.push({
                             id: `valeur-${famille}-${propriete}-${valeur?.id || valeur}`,
                             type: "valeur",

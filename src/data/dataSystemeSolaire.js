@@ -1,6 +1,5 @@
 // src/data/dataSystemeSolaire.js
-
-import DataJeu from "./DataJeu";
+import DataJeu from "@data/DataJeu";
 
 const dataSystemeSolaire = new DataJeu({
     id: "systemeSolaire",

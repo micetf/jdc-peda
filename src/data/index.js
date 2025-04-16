@@ -1,8 +1,8 @@
 // src/data/index.js
-import dataHistory from "./dataHistory";
-import dataPedagogy from "./dataPedagogy";
-import dataSystemeSolaire from "./dataSystemeSolaire";
-import dataClassificationVivant from "./dataClassificationVivant";
+import dataHistory from "@data/dataHistory";
+import dataPedagogy from "@data/dataPedagogy";
+import dataSystemeSolaire from "@data/dataSystemeSolaire";
+import dataClassificationVivant from "@data/dataClassificationVivant";
 /**
  * Liste de tous les jeux de cartes disponibles
  */

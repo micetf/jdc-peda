@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Button from "../components/UI/Button";
+import Button from "@components/UI/Button";
 
 /**
  * Page d'accueil de l'application

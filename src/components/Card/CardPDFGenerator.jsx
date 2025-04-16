@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import useData from "../Data/useData";
-import Button from "../UI/Button";
+import useData from "@components/Data/useData";
+import Button from "@components/UI/Button";
 import jsPDF from "jspdf";
 
 /**

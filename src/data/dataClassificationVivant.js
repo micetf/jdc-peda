@@ -1,6 +1,6 @@
 // src/data/dataClassificationVivant.js
 
-import DataJeu from "./DataJeu";
+import DataJeu from "@data/DataJeu";
 
 const dataClassificationVivant = new DataJeu({
     id: "classification-vivant-primaire",

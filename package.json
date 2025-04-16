@@ -1,13 +1,17 @@
 {
     "name": "jdc-peda",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.1.0",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "lint": "eslint .",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+        "test:build": "vite preview --port 4173 --base=/jdc-peda/",
+        "clean": "rimraf dist",
+        "prebuild": "npm run clean",
+        "analyze": "vite-bundle-analyzer"
     },
     "dependencies": {
         "@micetf/ui": "workspace:*",
@@ -32,7 +36,9 @@
         "globals": "^15.15.0",
         "jsdoc": "^4.0.4",
         "postcss": "^8.5.3",
+        "rimraf": "^5.0.5",
         "tailwindcss": "3.4.3",
-        "vite": "^6.2.5"
+        "vite": "^6.2.5",
+        "vite-bundle-analyzer": "^0.10.0"
     }
 }

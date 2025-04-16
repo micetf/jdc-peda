@@ -1,7 +1,7 @@
 // src/components/Card/CardGrid.jsx
 import React, { useMemo } from "react"; // useCallback n'est plus nécessaire ici
 import PropTypes from "prop-types";
-import Card from "./Card"; // Le composant Card modifié
+import Card from "@components/Card/Card"; // Le composant Card modifié
 
 /**
  * Grille de cartes pédagogiques
@@ -32,10 +32,6 @@ const CardGrid = ({ data, filter }) => {
         }
     }, [data, filter]); // Dépendances de useMemo
 
-    // Supprimé : getCardColor n'est plus nécessaire ici
-    // Supprimé : formatCardContent n'est plus nécessaire ici
-    // Supprimé : Le bloc useMemo qui générait les cartes manuellement
-
     // Si aucune carte à afficher
     if (!cards || cards.length === 0) {
         return (
@@ -55,7 +51,12 @@ const CardGrid = ({ data, filter }) => {
                     title={carte.title}
                     content={carte.content} // Utilise le contenu fourni par getCards
                     color={carte.color} // Utilise la couleur fournie par getCards
-                    image={carte.image} // Passe le chemin de l'image fourni par getCards
+                    image={
+                        carte.image
+                            ? import.meta.env.BASE_URL +
+                              carte.image.replace(/^\//, "")
+                            : null
+                    } // Passe le chemin de l'image fourni par getCards
                     data={data} // Passe l'instance data si Card en a besoin (pour getFamilyDescription)
                     // propertyName={carte.propertyName} // Supprimé : Card n'en a plus besoin
                 />

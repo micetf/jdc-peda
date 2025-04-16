@@ -6,15 +6,54 @@
 
 /**
  * Base path pour les images d'illustrations
+ * Ce chemin fonctionne en développement et en production
  */
-const ILLUSTRATIONS_BASE_PATH = "/src/assets/illustrations";
+const ILLUSTRATIONS_BASE_PATH = "/assets/illustrations";
+
+/**
+ * Fonction utilitaire pour préfixer les chemins d'images avec le chemin de base correct
+ * @param {string} path - Chemin relatif de l'image
+ * @returns {string} Chemin complet avec préfixe correct
+ */
+export const getImageUrl = (path) => {
+    if (!path) return null;
+
+    // 1. Normaliser le chemin en supprimant les slashes initiaux
+    const cleanPath = path.replace(/^\/+/, "");
+
+    // 2. Extraire le préfixe de base sans slashes (jdc-peda)
+    const basePath = import.meta.env.BASE_URL.replace(/^\/+/, "").replace(
+        /\/+$/,
+        ""
+    );
+
+    // 3. Vérifier si le chemin contient déjà le préfixe de base
+    const hasBasePath = basePath && cleanPath.startsWith(basePath + "/");
+
+    // 4. Construire l'URL finale
+    if (import.meta.env.DEV) {
+        // En développement, ajouter simplement un slash initial
+        return `/${cleanPath}`;
+    } else {
+        // En production:
+        if (hasBasePath) {
+            // Si le chemin contient déjà le préfixe, juste ajouter un slash initial
+            return `/${cleanPath}`;
+        } else {
+            // Sinon, ajouter le préfixe
+            return `/${basePath}/${cleanPath}`;
+        }
+    }
+};
 
 /**
  * Chemin des images par défaut
  */
 const DEFAULT_IMAGES = {
-    families: `${ILLUSTRATIONS_BASE_PATH}/default/families.jpg`,
-    properties: `${ILLUSTRATIONS_BASE_PATH}/default/properties.jpg`,
+    families: getImageUrl(`${ILLUSTRATIONS_BASE_PATH}/default/families.jpg`),
+    properties: getImageUrl(
+        `${ILLUSTRATIONS_BASE_PATH}/default/properties.jpg`
+    ),
 };
 
 /**
@@ -26,7 +65,9 @@ const DEFAULT_IMAGES = {
 export const getFamilyImagePath = (data, familyName) => {
     try {
         if (data?.metadata?.images?.families?.[familyName]) {
-            return `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.families[familyName]}`;
+            return getImageUrl(
+                `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.families[familyName]}`
+            );
         }
     } catch (error) {
         console.warn(
@@ -47,7 +88,9 @@ export const getFamilyImagePath = (data, familyName) => {
 export const getPropertyImagePath = (data, propertyName) => {
     try {
         if (data?.metadata?.images?.properties?.[propertyName]) {
-            return `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.properties[propertyName]}`;
+            return getImageUrl(
+                `${ILLUSTRATIONS_BASE_PATH}/${data.metadata.images.properties[propertyName]}`
+            );
         }
     } catch (error) {
         console.warn(
@@ -79,4 +122,5 @@ export default {
     getPropertyImagePath,
     imageExists,
     DEFAULT_IMAGES,
+    getImageUrl,
 };

@@ -1,5 +1,5 @@
 // src/data/dataHistory.js
-import DataJeu from "./DataJeu";
+import DataJeu from "@data/DataJeu";
 
 const dataHistory = new DataJeu({
     id: "history",
