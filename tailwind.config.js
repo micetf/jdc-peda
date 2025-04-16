@@ -65,7 +65,57 @@ export default {
             },
         },
     },
-    // Assurez-vous que les classes utilisées par le composant Navbar sont incluses
+    plugins: [
+        function ({ addComponents }) {
+            addComponents({
+                ".btn": {
+                    padding: "0.5rem 1rem",
+                    borderRadius: "0.375rem",
+                    fontWeight: "500",
+                    transition: "colors 0.3s ease",
+                },
+                ".btn-primary": {
+                    backgroundColor: "#0284c7",
+                    color: "#fff",
+                    "&:hover": {
+                        backgroundColor: "#0369a1",
+                    },
+                },
+                ".btn-secondary": {
+                    backgroundColor: "#ffed4a",
+                    color: "#1a202c",
+                    "&:hover": {
+                        backgroundColor: "#e6d543",
+                    },
+                },
+                ".card": {
+                    backgroundColor: "#fff",
+                    borderRadius: "0.5rem",
+                    boxShadow:
+                        "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                    overflow: "hidden",
+                    transition: "transform 0.3s ease",
+                    "&:hover": {
+                        boxShadow:
+                            "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                    },
+                },
+                ".card-header": {
+                    padding: "1rem",
+                    fontWeight: "bold",
+                    fontSize: "1.125rem",
+                    borderBottomWidth: "1px",
+                },
+                ".card-body": {
+                    padding: "1rem",
+                },
+                ".card-footer": {
+                    padding: "1rem",
+                    borderTopWidth: "1px",
+                },
+            });
+        },
+    ],
     safelist: [
         {
             pattern:
@@ -109,5 +159,4 @@ export default {
         "hover:text-white",
         "mr-2",
     ],
-    plugins: [],
 };
